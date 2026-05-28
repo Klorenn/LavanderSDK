@@ -43,10 +43,7 @@ const fadeUp: Variants = {
 
 function SpiritLogo() {
   return (
-    <div className="relative h-8 w-8 rounded-full bg-[radial-gradient(circle_at_35%_30%,#d7c6ff_0%,#a87dd4_36%,#5b8dff_72%,#171027_100%)] shadow-[0_0_28px_rgba(168,125,212,0.45)]">
-      <div className="absolute left-2 top-1.5 h-2 w-2 rounded-full bg-white/90 blur-[0.2px]" />
-      <div className="absolute bottom-1.5 right-1.5 h-3 w-3 rounded-full border border-white/50" />
-    </div>
+    <img src="/fetcher-icon.png" alt="Fetcher" className="h-8 w-8 rounded-full object-cover shadow-[0_0_28px_rgba(168,125,212,0.45)]" />
   );
 }
 
