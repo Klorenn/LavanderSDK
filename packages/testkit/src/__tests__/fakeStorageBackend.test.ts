@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFakeStorageBackend } from "../fakeStorageBackend.js";
-
-const TEST_CID = "bafkzcibcccccccccccccccccccccccccccccccccccccccccccccccccccc";
+import { TEST_CID } from "../fixtures.js";
 
 describe("createFakeStorageBackend", () => {
   it("stores, downloads, and verifies bytes", async () => {

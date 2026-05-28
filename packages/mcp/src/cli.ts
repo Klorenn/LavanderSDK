@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from "@modelcontextprotocol/server";
 import { createFetcherMcpServer } from "./server.js";
+import { FetcherError } from "@fetcher-fil/core";
 
 const privateKey = process.env.FILECOIN_PRIVATE_KEY as `0x${string}` | undefined;
 const network = process.env.FILECOIN_NETWORK === "mainnet" ? "mainnet" : "calibration";
 
 if (!privateKey) {
-  throw new Error("FILECOIN_PRIVATE_KEY is required for the MCP server");
+  throw new FetcherError("CONFIGURATION_ERROR", "FILECOIN_PRIVATE_KEY is required for the MCP server");
 }
 
 const { createSynapseBackend } = await import("@fetcher-fil/core");
