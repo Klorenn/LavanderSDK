@@ -556,8 +556,8 @@ function PricingSection() {
 }
 
 function DocsSection() {
-  const docTabs = ['Overview', 'Quickstart', 'MCP Setup', 'Architecture', 'API Reference', 'Agent Memory', 'Integrations', 'Security'] as const;
-  const [docTab, setDocTab] = useState<typeof docTabs[number]>('Overview');
+  const docTabs = ['Overview', 'Guide', 'Quickstart', 'MCP Setup', 'Architecture', 'API Reference', 'Agent Memory', 'Integrations', 'Security'] as const;
+  const [docTab, setDocTab] = useState<typeof docTabs[number]>('Guide');
 
   return (
     <section id="docs" className="px-8 py-24 md:px-28 md:py-32">
@@ -580,6 +580,9 @@ function DocsSection() {
 
           {/* ── Overview ──────────────────────────────────── */}
           {docTab === 'Overview' && <OverviewDoc />}
+
+          {/* ── Guide ────────────────────────────────────── */}
+          {docTab === 'Guide' && <GuideDoc />}
 
           {/* ── Quickstart ────────────────────────────────── */}
           {docTab === 'Quickstart' && <QuickstartDoc />}
@@ -664,6 +667,251 @@ function OverviewDoc() {
 
       <DocBlock title="What Fetcher is NOT">
         <p>Fetcher does not replace Synapse SDK or the Filecoin protocol. It is a thin agent-native layer that gives AI frameworks a safe, consistent contract for storage. It does not manage wallets, encrypt data, delete data from Filecoin, or provide a Python/Go SDK (on the roadmap).</p>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── Guide Tab ─────────────────────────────────────────────── */
+
+function GuideDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Complete Guide: From Zero to Filecoin">
+        <p>This guide walks you through every step — wallet setup, testnet funding, SDK installation, first upload, verification, and agent memory. Follow along and you will have your AI agent storing data on Filecoin Onchain Cloud in under 30 minutes.</p>
+      </DocBlock>
+
+      <DocBlock title="1. What you need">
+        <div className="grid gap-3 not-prose">
+          {[
+            { item: 'A computer with Node.js 18+ installed' },
+            { item: 'MetaMask browser extension (or any EVM wallet)' },
+            { item: 'An MCP-compatible client (Claude Desktop, Cursor, Continue, Cody, etc.)' },
+            { item: '5 minutes for setup, 5 minutes for faucet, 10 minutes to test' },
+          ].map(i => (
+            <div key={i.item} className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+              <span className="text-accent font-bold shrink-0">—</span>
+              <p className="text-sm text-muted-foreground">{i.item}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+
+      <DocBlock title="2. Set up your Filecoin wallet">
+        <p>The SDK uses an EVM-compatible wallet to sign storage transactions. MetaMask is the easiest option.</p>
+        <div className="not-prose space-y-3 mt-3">
+          <div className="rounded-lg border border-border bg-background p-4">
+            <h4 className="font-semibold text-foreground text-sm mb-2">Add Filecoin Calibration to MetaMask</h4>
+            <div className="space-y-1.5 text-xs font-mono text-muted-foreground">
+              <p><span className="text-accent">Network Name:</span> Filecoin Calibration</p>
+              <p><span className="text-accent">RPC URL:</span> https://api.calibration.node.glif.io/rpc/v1</p>
+              <p><span className="text-accent">Chain ID:</span> 314159</p>
+              <p><span className="text-accent">Currency Symbol:</span> tFIL</p>
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-4">
+            <h4 className="font-semibold text-foreground text-sm mb-2">Get your private key</h4>
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
+              <li>Open MetaMask → click the three dots next to your account</li>
+              <li>Account Details → Export Private Key</li>
+              <li>Enter your password → copy the key (format: 0x + 64 hex characters)</li>
+              <li><span className="text-[#ff6b8b] font-semibold">Never share this key. Never commit it to git.</span></li>
+            </ol>
+          </div>
+        </div>
+      </DocBlock>
+
+      <DocBlock title="3. Fund your wallet with test FIL">
+        <p>Calibration is a testnet — tokens are free and have no real-world value. You need them to pay for storage operations.</p>
+        <div className="not-prose space-y-3 mt-3">
+          <div className="rounded-lg border border-accent/20 bg-accent/5 p-4">
+            <h4 className="font-semibold text-foreground text-sm mb-2">Faucet</h4>
+            <p className="text-xs text-muted-foreground mb-2">Go to <code className="rounded bg-accent/10 px-1 text-accent">faucet.calibration.fildev.network</code></p>
+            <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
+              <li>Paste your wallet address (starts with 0x)</li>
+              <li>Complete the captcha</li>
+              <li>Click "Send" — you receive ~1 tFIL</li>
+              <li>Wait ~30 seconds for the transaction to confirm</li>
+            </ol>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-4">
+            <h4 className="font-semibold text-foreground text-sm mb-2">Verify your balance</h4>
+            <p className="text-xs text-muted-foreground">Open MetaMask, switch to Filecoin Calibration network. You should see your tFIL balance. If it shows 0, wait a minute and refresh.</p>
+          </div>
+        </div>
+      </DocBlock>
+
+      <DocBlock title="4. Install Fetcher SDK">
+        <p className="mb-3">The SDK is a monorepo of packages. Install the core and the adapter for your framework.</p>
+        <div className="not-prose">
+          <CodeBlock
+            code={`# Core SDK (required)
+npm install @fetcher-fil/core
+
+# Choose your adapter:
+npm install @fetcher-fil/mcp        # For MCP clients (Claude, Cursor, Continue...)
+npm install @fetcher-fil/langchain  # For LangChain agents
+npm install @fetcher-fil/llamaindex # For LlamaIndex agents
+npm install @fetcher-fil/sdk        # For direct programmatic use`}
+            language="bash" filename="terminal" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="5. Configure your environment">
+        <p className="mb-3">Create a <code className="rounded bg-accent/10 px-1 text-xs text-accent">.env</code> file with your credentials:</p>
+        <div className="not-prose">
+          <CodeBlock
+            code={`FILECOIN_PRIVATE_KEY=0x...your_private_key_here
+FILECOIN_NETWORK=calibration
+FILECOIN_AGENT_ALLOW_PAID=true`}
+            language="bash" filename=".env" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="6. Your first upload (SDK Direct)">
+        <p className="mb-3">Create a file <code className="rounded bg-accent/10 px-1 text-xs text-accent">test.ts</code> and run it:</p>
+        <div className="not-prose">
+          <CodeBlock
+            code={`import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
+
+const f = new Fetcher({
+  backend: await createSynapseBackend({
+    privateKey: process.env.FILECOIN_PRIVATE_KEY as \`0x\${string}\`,
+    network: "calibration"
+  }),
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+// 1. Check balance
+const balance = await f.balance();
+console.log("Balance:", balance.availableUsdfc, "USDFC");
+
+// 2. Store a file (must be at least 127 bytes)
+const { cid, url } = await f.store({
+  content: "This is my first file stored on Filecoin Onchain Cloud via Fetcher SDK. It is verified every hour with cryptographic PDP proofs.",
+  filename: "hello.txt",
+  confirmPaidOperation: true
+});
+console.log("Stored! CID:", cid);
+console.log("URL:", url);
+
+// 3. Verify it
+const verification = await f.verify({ cid });
+console.log("Verified:", verification.verified, "- Integrity:", verification.integrity);
+
+// 4. Retrieve it
+const retrieved = await f.retrieve({ cid, encoding: "text" });
+console.log("Content:", retrieved.content);
+
+// 5. Remember it for next session
+await f.memory.store({
+  agentId: "my-first-agent",
+  memoryKey: "last-upload",
+  data: { cid, filename: "hello.txt", timestamp: new Date().toISOString() },
+  confirmPaidOperation: true
+});
+console.log("Memory stored!");`}
+            language="TypeScript" filename="test.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="7. Using Agent Memory">
+        <p>Store context that persists between sessions. Your agent remembers preferences, task history, and state across conversations.</p>
+        <div className="not-prose mt-3">
+          <CodeBlock
+            code={`// Session 1 — Store preferences
+await f.memory.store({
+  agentId: "my-agent",
+  memoryKey: "preferences",
+  data: { language: "es", theme: "dark", notifications: true },
+  confirmPaidOperation: true
+});
+
+// Session 2 (next day) — Retrieve and use
+const prefs = await f.memory.retrieve({
+  agentId: "my-agent",
+  memoryKey: "preferences",
+  fallback: { language: "en", theme: "light" }
+});
+// → { found: true, data: { language: "es", theme: "dark", notifications: true }, version: 1 }
+
+// Update one field
+await f.memory.update({
+  agentId: "my-agent",
+  memoryKey: "preferences",
+  patch: { theme: "system" }
+});
+// → { updatedFields: ["theme"], version: 2 }`}
+            language="TypeScript" filename="memory.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="8. Monitoring your storage">
+        <p>Check what you have stored, estimate costs, and list active deals.</p>
+        <div className="not-prose mt-3">
+          <CodeBlock
+            code={`// Dashboard of everything you have stored
+const stats = await f.stats();
+console.log("Files:", stats.totalFiles);
+console.log("Size:", stats.totalSizeGb, "GB");
+console.log("Memories:", stats.totalMemories);
+console.log("Tags:", stats.tagsUsed);
+
+// Estimate cost before uploading
+const cost = await f.estimateCost({
+  sizeBytes: 5 * 1024 * 1024, // 5 MB
+  durationDays: 365
+});
+console.log("Cost:", cost.estimatedCostUsdfc, "USDFC");
+console.log("Can afford:", cost.canAfford);
+
+// List active storage deals
+const deals = await f.deals();
+console.log("Active deals:", deals.total);`}
+            language="TypeScript" filename="monitor.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="9. Switching to Mainnet">
+        <p>Once you are comfortable on Calibration, moving to production is one config change. <span className="text-[#ff6b8b] font-semibold">Make sure you have real FIL in your wallet first.</span></p>
+        <div className="not-prose mt-2 rounded-lg border border-[#ff6b8b]/20 bg-[#ff6b8b]/5 p-4">
+          <p className="text-xs text-muted-foreground">
+            <span className="text-[#ff6b8b] font-semibold">Warning:</span> Mainnet costs real money. Always test thoroughly on Calibration first. Use <code className="rounded bg-accent/10 px-1 text-accent">estimate_cost</code> before every upload.
+          </p>
+        </div>
+        <div className="not-prose mt-3">
+          <CodeBlock
+            code={`// Only two changes from Calibration:
+const f = new Fetcher({
+  backend: await createSynapseBackend({
+    privateKey: process.env.FILECOIN_PRIVATE_KEY as \`0x\${string}\`,
+    network: "mainnet"  // ← change this
+  }),
+  spendingPolicy: {
+    allowPaidOperations: true,
+    requireConfirmation: true  // ← keep this for safety
+  }
+});`}
+            language="TypeScript" filename="mainnet.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="Troubleshooting">
+        <div className="grid gap-3 not-prose">
+          {[
+            { problem: '"FILECOIN_PRIVATE_KEY is required"', fix: 'Your .env file is not being loaded. Make sure the file exists and the variable is set before running your script.' },
+            { problem: '"Content size X bytes is below minimum"', fix: 'Filecoin requires at least 127 bytes per upload. Add more content to your text or use a larger file.' },
+            { problem: '"Paid operation blocked by spending policy"', fix: 'Set allowPaidOperations: true in your config and pass confirmPaidOperation: true to the tool call.' },
+            { problem: 'MetaMask shows 0 balance after faucet', fix: 'Wait 30-60 seconds. Calibration transactions can take a moment. Check the faucet page for confirmation.' },
+            { problem: 'Upload fails with error code 33', fix: 'This is a Calibration network issue. Wait a few minutes and retry. The testnet can be congested.' },
+          ].map(t => (
+            <div key={t.problem} className="rounded-lg border border-border bg-background p-4">
+              <p className="text-xs font-semibold text-[#ff6b8b] mb-1">{t.problem}</p>
+              <p className="text-xs text-muted-foreground leading-5">{t.fix}</p>
+            </div>
+          ))}
+        </div>
       </DocBlock>
     </DocSection>
   );
