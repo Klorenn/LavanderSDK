@@ -206,25 +206,21 @@ function CodeBlock({ code, language, filename }: { code: string; language: strin
 
 /* ── Terminal component ──────────────────────────────────── */
 
-const asciiDaemon = [
-  '   /|、',
-  '  (˚ˎ 。7  ',
-  '   |、˜〵  ',
-  '  じしˍ,)ノ',
-];
+const asciiArt = `⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡤⢝⣥⣷⣾⡟⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⡇⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣀⡅⢾⣿⣺⠟⡼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⡉⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠘⢰⢠⣿⠿⠃⠀⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢧⠙⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣴⣦⡶⠟⠁⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠤⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿`;
 
 const terminalLines = [
-  { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/80', delay: 0 },
-  { text: '', color: '', delay: 0.4 },
-  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.6 },
-  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 0.8 },
-  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 1.0 },
-  { text: '', color: '', delay: 1.3 },
-  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.5 },
-  { text: '', color: '', delay: 2.0 },
-  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 2.2 },
-  { text: 'MCP server listening on stdio', color: 'text-muted-foreground', delay: 2.4 },
-  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.6 },
+  { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/90', delay: 0.6 },
+  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.9 },
+  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 1.1 },
+  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 1.3 },
+  { text: '', color: '', delay: 1.6 },
+  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.9 },
+  { text: '', color: '', delay: 2.3 },
+  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 2.5 },
+  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.8 },
 ];
 
 function Terminal() {
@@ -232,7 +228,7 @@ function Terminal() {
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setStarted(true), 800);
+    const timer = setTimeout(() => setStarted(true), 600);
     return () => clearTimeout(timer);
   }, []);
 
@@ -245,39 +241,38 @@ function Terminal() {
   }, [started, visibleLines]);
 
   return (
-    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex">
-      <div className="w-[42%] hidden md:flex items-center justify-center border-r border-white/5 p-4">
-        <pre className="font-mono text-[10px] md:text-xs leading-[1.15] text-accent/60 whitespace-pre">
-          {asciiDaemon.join('\n')}
-        </pre>
+    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex flex-col">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 shrink-0">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
+        <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher — terminal</span>
       </div>
-      <div className="flex-1 flex flex-col p-4 md:p-6 font-mono text-[11px] md:text-xs">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
-          <span className="ml-3 text-[10px] text-muted-foreground">Terminal</span>
-        </div>
-        <div className="flex-1 space-y-0.5 overflow-hidden">
+      <div className="flex-1 relative overflow-hidden">
+        <pre className="font-mono text-[5px] md:text-[7px] leading-[1.02] text-accent/[0.12] whitespace-pre absolute inset-0 overflow-hidden select-none p-2">
+          {asciiArt}
+        </pre>
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 space-y-0.5 z-10">
           {terminalLines.slice(0, visibleLines).map((line, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
-              className={`${line.color} leading-relaxed`}
+              className={`font-mono text-[12px] md:text-sm ${line.color} leading-relaxed`}
             >
               {line.text || '\u00A0'}
-              {i === visibleLines - 1 && i >= 6 && (
+              {i === visibleLines - 1 && i >= 4 && (
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
-                  className="inline-block w-2 h-3.5 bg-accent ml-0.5 align-middle rounded-sm"
+                  className="inline-block w-2 h-4 bg-accent ml-0.5 align-middle rounded-sm"
                 />
               )}
             </motion.div>
           ))}
         </div>
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#05040b] to-transparent pointer-events-none" />
       </div>
     </div>
   );
