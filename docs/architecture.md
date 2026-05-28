@@ -1,6 +1,6 @@
-# Filecoin Agent SDK Architecture
+# Fetcher — Filecoin Agent SDK Architecture
 
-Filecoin Agent SDK is a thin agent-native layer over Filecoin Onchain Cloud. The project does not replace Synapse SDK or `foc-cli`; it gives agent frameworks one small, safe contract for storage.
+Fetcher is a thin agent-native layer over Filecoin Onchain Cloud via Synapse SDK.
 
 ## Decision
 
@@ -10,6 +10,7 @@ Adapters depend on `@fetcher-fil/core`. Only core knows about Synapse.
 MCP tools ───────┐
 LangChain tools ─┼──> @fetcher-fil/core ──> Synapse SDK ──> Filecoin Onchain Cloud
 LlamaIndex tools ┘
+SDK direct ──────┘
 ```
 
 ## Why this boundary exists
@@ -21,4 +22,5 @@ LlamaIndex tools ┘
 
 ## Core contract
 
-The MVP exposes six operations: `storeText`, `storeFile`, `retrieve`, `verify`, `prepareStorage`, and `getBalance`.
+The SDK exposes 17 operations across 5 groups: Storage (4), Verification (3), Observability (4), Agent Memory (5), Payments (1).
+All adapters — MCP, LangChain, LlamaIndex, SDK — expose identical semantics.

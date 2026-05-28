@@ -5,3 +5,9 @@ coverage/
 .env.*
 !.env.example
 .DS_Store
+.turbo/
+.cache/
+*.tsbuildinfo
+tmp/
+temp/
+*.log

@@ -1,59 +1,46 @@
 # Agent Memory Guide
 
-Fetcher's memory system is the differentiator — nobody else gives AI agents structured, persistent memory on Filecoin Onchain Cloud.
-
-## How it works
-
-Each memory entry is stored as a JSON object on Filecoin, indexed locally by `agent_id` + `memory_key`. The agent can store, retrieve, update, list, and delete memories across sessions.
+Fetcher's memory system is the differentiator — structured, versioned, TTL-aware memory for AI agents on Filecoin.
 
 ## Quick Start
 
 ```ts
-import { Fetcher } from "@filecoin-agent/sdk";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
-const fetcher = new Fetcher({
+const f = new Fetcher({
   backend: await createSynapseBackend({ privateKey: "0x..." }),
-  spendingPolicy: { allowPaidOperations: true },
-  indexDir: "~/.fetcher"
+  spendingPolicy: { allowPaidOperations: true }
 });
 
-await fetcher.memory.store({
+// Store memory
+await f.memory.store({
   agentId: "my-assistant",
   memoryKey: "user_preferences",
-  data: { language: "es", theme: "dark", notifications: true },
+  data: { language: "es", theme: "dark" },
   confirmPaidOperation: true
 });
 
-const { data, version, ageDays } = await fetcher.memory.retrieve({
+// Retrieve next session
+const mem = await f.memory.retrieve({
   agentId: "my-assistant",
-  memoryKey: "user_preferences"
+  memoryKey: "user_preferences",
+  fallback: { language: "en" }
 });
+// → { found: true, data: { language: "es", theme: "dark" }, version: 1 }
+
+// Update a single field
+await f.memory.update({
+  agentId: "my-assistant",
+  memoryKey: "user_preferences",
+  patch: { theme: "system" }
+});
+// → { updatedFields: ["theme"], version: 2 }
 ```
 
-## Memory tools
+## Features
 
-| Tool | Description |
-|---|---|
-| `store_memory` | Create or overwrite a memory entry with version tracking |
-| `retrieve_memory` | Fetch a memory with optional fallback |
-| `update_memory` | Patch specific fields without replacing the whole object |
-| `list_memories` | List all memories for an agent |
-| `delete_memory` | Remove from local index (Filecoin data is permanent) |
-
-## Versioning
-
-Every `store_memory` increments the version counter. The agent can detect conflicts or track changes over time.
-
-## TTL
-
-Set `ttlDays` to auto-expire memories. After expiration, `retrieve_memory` returns `found: false`.
-
-```ts
-await fetcher.memory.store({
-  agentId: "session-agent",
-  memoryKey: "temp_context",
-  data: { task: "in-progress" },
-  ttlDays: 7
-});
-```
+- **Versioned**: Every store increments the version counter
+- **TTL-aware**: Set ttlDays to auto-expire entries
+- **Patch updates**: update_memory merges fields without replacing the object
+- **Fallback values**: retrieve_memory accepts a default on miss

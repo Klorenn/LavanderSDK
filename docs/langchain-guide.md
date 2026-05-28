@@ -1,68 +1,49 @@
-# LangChain Integration Guide
+# LangChain Integration
 
-Fetcher provides the first native LangChain toolkit for Filecoin Onchain Cloud. 17 DynamicStructuredTools available in one import.
+Fetcher provides 17 native DynamicStructuredTools for LangChain.
 
 ## Install
 
 ```bash
-npm install @filecoin-agent/langchain @filecoin-agent/core @langchain/core
+npm install @fetcher-fil/langchain @fetcher-fil/core @langchain/core
 ```
 
 ## Quick Start
 
 ```ts
-import { createFetcherTools } from "@filecoin-agent/langchain";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFetcherTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 
-const backend = await createSynapseBackend({
-  privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}`
+const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY });
+const tools = createFetcherTools({ backend, spendingPolicy: { allowPaidOperations: true } });
+
+const executor = new AgentExecutor({
+  agent: await createOpenAIFunctionsAgent({ llm: new ChatOpenAI({ model: "gpt-4o" }), tools, prompt }),
+  tools
 });
 
-const tools = createFetcherTools({
-  backend,
-  spendingPolicy: { allowPaidOperations: true }
-});
-
-const agent = await createOpenAIFunctionsAgent({
-  llm: new ChatOpenAI({ model: "gpt-4o" }),
-  tools,
-  prompt
-});
-
-const executor = new AgentExecutor({ agent, tools });
-
-const result = await executor.invoke({
-  input: "Store the quarterly report on Filecoin, verify it, and save the CID in memory for next session."
-});
+await executor.invoke({ input: "Store the quarterly report on Filecoin and remember the CID." });
 ```
 
 ## Available Tools
 
-All 17 tools are available as LangChain DynamicStructuredTools:
-
 | Group | Tools |
 |---|---|
-| Storage | `store_file`, `retrieve_file`, `list_files`, `delete_file` |
-| Verify | `verify_cid`, `check_deal`, `get_proof` |
-| Observe | `get_balance`, `estimate_cost`, `get_storage_stats`, `list_deals` |
-| Memory | `store_memory`, `retrieve_memory`, `update_memory`, `list_memories`, `delete_memory` |
-| Payments | `prepare_storage` |
+| Storage | store_file, retrieve_file, list_files, delete_file |
+| Verify | verify_cid, check_deal, get_proof |
+| Observe | get_balance, estimate_cost, get_storage_stats, list_deals |
+| Memory | store_memory, retrieve_memory, update_memory, list_memories, delete_memory |
+| Payments | prepare_storage |
 
-## Testing without a wallet
+## Testing
 
 ```ts
-import { createFakeStorageBackend } from "@filecoin-agent/testkit";
+import { createFakeStorageBackend } from "@fetcher-fil/testkit";
 
 const tools = createFetcherTools({
   backend: createFakeStorageBackend(),
   spendingPolicy: { allowPaidOperations: true, requireConfirmation: false }
-});
-
-const [storeFile] = tools;
-const result = await storeFile.invoke({
-  content: "test content that is at least 127 bytes long for the Filecoin minimum size requirement",
-  filename: "test.txt"
 });
 ```

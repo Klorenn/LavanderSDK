@@ -9,8 +9,10 @@ export const DEFAULT_SPENDING_POLICY: SpendingPolicy = {
   requireConfirmation: true
 };
 
-export const DEFAULT_MIME_TYPE = "text/plain";
+export const DEFAULT_MIME_TYPE = "application/octet-stream";
 export const FILECOIN_MIN_BYTES = 127;
+
+export const ESTIMATED_COST_PER_GB_MONTH = 0.02;
 
 export const MIME_BY_EXT: Record<string, string> = {
   txt: "text/plain", json: "application/json", md: "text/markdown",

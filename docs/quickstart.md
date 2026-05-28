@@ -1,13 +1,13 @@
-# Filecoin Agent SDK Quickstart
+# Quickstart
 
 Start on Calibration testnet. Mainnet should be an explicit decision.
 
-## MCP
+## MCP — Claude Desktop
 
 ```json
 {
   "mcpServers": {
-    "filecoin-agent": {
+    "fetcher": {
       "command": "npx",
       "args": ["@fetcher-fil/mcp"],
       "env": {
@@ -20,34 +20,41 @@ Start on Calibration testnet. Mainnet should be an explicit decision.
 }
 ```
 
-Ask your agent:
-
-```txt
-Store this short report on Filecoin and verify it after upload.
-```
-
 ## LangChain
 
 ```ts
-import { createFilecoinTools } from "@fetcher-fil/langchain";
+import { createFetcherTools } from "@fetcher-fil/langchain";
 import { createSynapseBackend } from "@fetcher-fil/core";
 
-const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}` });
-const tools = createFilecoinTools({
-  backend,
-  spendingPolicy: { allowPaidOperations: true, requireConfirmation: true }
+const tools = createFetcherTools({
+  backend: await createSynapseBackend({ privateKey: "0x..." }),
+  spendingPolicy: { allowPaidOperations: true }
 });
 ```
 
 ## LlamaIndex
 
 ```ts
-import { createFilecoinTools } from "@fetcher-fil/llamaindex";
+import { createFetcherTools } from "@fetcher-fil/llamaindex";
 import { createSynapseBackend } from "@fetcher-fil/core";
 
-const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}` });
-const tools = createFilecoinTools({
-  backend,
-  spendingPolicy: { allowPaidOperations: true, requireConfirmation: true }
+const tools = createFetcherTools({
+  backend: await createSynapseBackend({ privateKey: "0x..." }),
+  spendingPolicy: { allowPaidOperations: true }
 });
+```
+
+## SDK Direct
+
+```ts
+import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
+
+const f = new Fetcher({
+  backend: await createSynapseBackend({ privateKey: "0x..." }),
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const { cid } = await f.store({ content: "Hello Filecoin", filename: "hello.txt" });
+await f.memory.store({ agentId: "my-agent", memoryKey: "prefs", data: { theme: "dark" } });
 ```

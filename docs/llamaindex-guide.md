@@ -1,61 +1,44 @@
-# LlamaIndex Integration Guide
+# LlamaIndex Integration
 
-Fetcher provides native FunctionTools for LlamaIndex — the first Filecoin Onchain Cloud integration for the LlamaIndex ecosystem.
+Fetcher provides 17 native FunctionTools for LlamaIndex.
 
 ## Install
 
 ```bash
-npm install @filecoin-agent/llamaindex @filecoin-agent/core llamaindex
+npm install @fetcher-fil/llamaindex @fetcher-fil/core llamaindex
 ```
 
 ## Quick Start
 
 ```ts
-import { createFetcherTools } from "@filecoin-agent/llamaindex";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFetcherTools } from "@fetcher-fil/llamaindex";
+import { createSynapseBackend } from "@fetcher-fil/core";
 import { OpenAIAgent, OpenAI } from "llamaindex";
 
-const backend = await createSynapseBackend({
-  privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}`
-});
+const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY });
+const tools = createFetcherTools({ backend, spendingPolicy: { allowPaidOperations: true } });
 
-const tools = createFetcherTools({
-  backend,
-  spendingPolicy: { allowPaidOperations: true }
-});
-
-const agent = new OpenAIAgent({
-  llm: new OpenAI({ model: "gpt-4o" }),
-  tools
-});
-
-const response = await agent.chat({
-  message: "What files have I stored? Show my storage stats and deal status."
-});
+const agent = new OpenAIAgent({ llm: new OpenAI({ model: "gpt-4o" }), tools });
+await agent.chat({ message: "Store this report on Filecoin and verify it." });
 ```
 
 ## Available Tools
 
-All 17 tools as LlamaIndex FunctionTools:
-
 | Group | Tools |
 |---|---|
-| Storage | `store_file`, `retrieve_file`, `list_files`, `delete_file` |
-| Verify | `verify_cid`, `check_deal`, `get_proof` |
-| Observe | `get_balance`, `estimate_cost`, `get_storage_stats`, `list_deals` |
-| Memory | `store_memory`, `retrieve_memory`, `update_memory`, `list_memories`, `delete_memory` |
-| Payments | `prepare_storage` |
+| Storage | store_file, retrieve_file, list_files, delete_file |
+| Verify | verify_cid, check_deal, get_proof |
+| Observe | get_balance, estimate_cost, get_storage_stats, list_deals |
+| Memory | store_memory, retrieve_memory, update_memory, list_memories, delete_memory |
+| Payments | prepare_storage |
 
-## Testing without a wallet
+## Testing
 
 ```ts
-import { createFakeStorageBackend } from "@filecoin-agent/testkit";
+import { createFakeStorageBackend } from "@fetcher-fil/testkit";
 
 const tools = createFetcherTools({
   backend: createFakeStorageBackend(),
   spendingPolicy: { allowPaidOperations: true, requireConfirmation: false }
 });
-
-const names = tools.map((t) => t.metadata.name);
-// ["store_file", "retrieve_file", "list_files", "verify_cid", ...
 ```

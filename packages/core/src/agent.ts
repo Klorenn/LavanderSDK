@@ -1,7 +1,5 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, getMimeType } from "./defaults.js";
 import { FetcherError } from "./errors.js";
 import { FileIndexBackend } from "./backends/fileIndexBackend.js";

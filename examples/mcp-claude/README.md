@@ -1,13 +1,13 @@
 # MCP Example
 
-This example configures an MCP-compatible host to run Filecoin Agent SDK over stdio.
+Add this to your Claude Desktop config:
 
 ```json
 {
   "mcpServers": {
-    "filecoin-agent": {
-      "command": "node",
-      "args": ["../../packages/mcp/dist/cli.js"],
+    "fetcher": {
+      "command": "npx",
+      "args": ["@fetcher-fil/mcp"],
       "env": {
         "FILECOIN_PRIVATE_KEY": "0x...",
         "FILECOIN_NETWORK": "calibration",

@@ -1,24 +1,20 @@
-# MCP Setup Guide
+# MCP Setup
 
-Connect Claude Desktop or any MCP-compatible client to Filecoin in one config change.
+Connect Claude Desktop or any MCP client to Filecoin in one config change.
 
 ## Requirements
 
 - Filecoin EVM wallet with USDFC on Calibration or Mainnet
 - Node.js 18+
 
-## Setup
-
-Add this to your MCP client config:
-
-### Claude Desktop
+## Claude Desktop
 
 ```json
 {
   "mcpServers": {
     "fetcher": {
       "command": "npx",
-      "args": ["@filecoin-agent/mcp"],
+      "args": ["@fetcher-fil/mcp"],
       "env": {
         "FILECOIN_PRIVATE_KEY": "0x...",
         "FILECOIN_NETWORK": "calibration",
@@ -28,14 +24,6 @@ Add this to your MCP client config:
   }
 }
 ```
-
-### Claude Code (CLI)
-
-```bash
-claude mcp add fetcher -- npx @filecoin-agent/mcp
-```
-
-Then set the environment variables in your shell profile.
 
 ## Environment Variables
 
@@ -47,15 +35,7 @@ Then set the environment variables in your shell profile.
 
 ## Available Tools
 
-Once connected, your agent sees 17 tools:
-
-| Group | Tools |
-|---|---|
-| Storage | `store_file`, `retrieve_file`, `list_files`, `delete_file` |
-| Verify | `verify_cid`, `check_deal`, `get_proof` |
-| Observe | `get_balance`, `estimate_cost`, `get_storage_stats`, `list_deals` |
-| Memory | `store_memory`, `retrieve_memory`, `update_memory`, `list_memories`, `delete_memory` |
-| Payments | `prepare_storage` |
+17 tools: store_file, retrieve_file, list_files, delete_file, verify_cid, check_deal, get_proof, get_balance, estimate_cost, get_storage_stats, list_deals, store_memory, retrieve_memory, update_memory, list_memories, delete_memory, prepare_storage.
 
 ## Safety
 

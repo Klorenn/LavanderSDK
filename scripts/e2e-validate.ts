@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createSynapseBackend, createFilecoinAgent } from "@filecoin-agent/core";
+import { createSynapseBackend, createFetcherAgent } from "@fetcher-fil/core";
 
 const privateKey = process.env.FILECOIN_PRIVATE_KEY as `0x${string}` | undefined;
 if (!privateKey) {
@@ -8,7 +8,7 @@ if (!privateKey) {
 }
 
 const backend = await createSynapseBackend({ privateKey, network: "calibration" });
-const agent = createFilecoinAgent({
+const agent = createFetcherAgent({
   backend,
   spendingPolicy: { allowPaidOperations: true, requireConfirmation: true }
 });
@@ -18,18 +18,19 @@ const balance = await agent.getBalance();
 console.log("   Balance:", JSON.stringify(balance));
 
 console.log("2. Storing text...");
-const stored = await agent.storeText({
-    text: "Filecoin Agent SDK end-to-end validation run — confirming the full core storage pipeline: Synapse backend upload, verify, and retrieve against Calibration testnet.",
+const stored = await agent.storeFile({
+  content: "Filecoin Agent SDK end-to-end validation run — confirming the full core storage pipeline: Synapse backend upload, verify, and retrieve against Calibration testnet.",
+  filename: "e2e-test.txt",
   confirmPaidOperation: true
 });
 console.log("   Stored:", JSON.stringify(stored, null, 2));
 
 console.log("3. Verifying...");
-const verified = await agent.verify({ pieceCid: stored.pieceCid });
+const verified = await agent.verify({ cid: stored.cid });
 console.log("   Verified:", JSON.stringify(verified, null, 2));
 
 console.log("4. Retrieving...");
-const retrieved = await agent.retrieve({ pieceCid: stored.pieceCid });
-console.log("   Retrieved:", retrieved.bytes ? new TextDecoder().decode(retrieved.bytes) : `outputPath=${retrieved.outputPath}`);
+const retrieved = await agent.retrieve({ cid: stored.cid });
+console.log("   Size:", retrieved.size, "bytes");
 
 console.log("\nAll checks passed.");

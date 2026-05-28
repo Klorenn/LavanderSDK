@@ -1,13 +1,9 @@
 {
-  "name": "filecoin-agent-sdk-monorepo",
+  "name": "fetcher-fil-monorepo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "examples/*"
-  ],
+  "workspaces": ["apps/*", "packages/*", "examples/*"],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
@@ -18,13 +14,8 @@
     "validate": "npx tsx scripts/e2e-validate.ts"
   },
   "devDependencies": {
-    "@modelcontextprotocol/server": "^2.0.0-alpha.2",
     "@types/node": "latest",
     "typescript": "latest",
     "vitest": "latest"
-  },
-  "dependencies": {
-    "@cfworker/json-schema": "^4.1.1",
-    "@fetcher-fil/core": "^0.1.0"
   }
 }

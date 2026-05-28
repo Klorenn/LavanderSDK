@@ -2,11 +2,6 @@ import { z } from "zod";
 
 const cidSchema = z.string().min(1, "CID is required");
 
-const metadataSchema = z
-  .record(z.string().min(1).max(32), z.string().max(128))
-  .refine((value) => Object.keys(value).length <= 5, "Piece metadata supports at most 5 keys")
-  .optional();
-
 export const storeFileInputSchema = z.object({
   content: z.string().min(1).optional(),
   data: z.any().optional(),
