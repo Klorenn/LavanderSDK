@@ -59,6 +59,14 @@ Fetcher is a TypeScript SDK that gives AI agents — Claude, GPT-4o, Gemini — 
 
 **$2,000**
 
+### Due Date
+
+**08/31/2026** (8 weeks from July start)
+
+### Completion Criteria
+
+Fetcher v1.0.0 published to npm with all 17 tools functional across 4 adapters (MCP, LangChain, LlamaIndex, SDK). Full documentation site live at lavander-sdk.vercel.app. At least 5 verified paid storage deals completed on Calibration testnet via the SDK. All 75 tests passing. Community announcement posted in Filecoin Slack.
+
 ### 2.4 Milestones & Budget
 
 | # | Milestone | Deliverable | Timeline | Budget |
