@@ -1,6 +1,9 @@
 {
   "name": "@fetcher-fil/core",
   "version": "0.1.0",
+  "description": "Core storage API, spending policy, Synapse backend, and memory system for Fetcher — the Filecoin Agent SDK",
+  "license": "MIT",
+  "keywords": ["filecoin", "synapse", "mcp", "langchain", "llamaindex", "ai-agents", "storage", "pdp"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,6 +1,6 @@
 import { writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
-import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, getMimeType } from "./defaults.js";
+import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, getMimeType, ESTIMATED_COST_PER_GB_MONTH } from "./defaults.js";
 import { FetcherError } from "./errors.js";
 import { FileIndexBackend } from "./backends/fileIndexBackend.js";
 import type { IndexedMemory, IndexBackend } from "./indexBackend.js";
@@ -17,7 +17,8 @@ import {
   listMemoriesInputSchema,
   deleteMemoryInputSchema,
   estimateCostInputSchema,
-  getProofInputSchema
+  getProofInputSchema,
+  listDealsInputSchema
 } from "./schemas.js";
 import type {
   FetcherConfig,
@@ -102,7 +103,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
     async verify(input) {
       const parsed = verifyInputSchema.parse(input);
       const result = await backend.verify(parsed);
-      return { ...result, integrity: result.verified };
+      return result;
     },
 
     async checkDeal(input) {
@@ -128,7 +129,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       assertPaidOperationAllowed(policy, parsed.bytes, parsed.confirmPaidOperation);
       const result = await backend.prepareStorage(parsed);
       const balance = await backend.getBalance();
-      const costEstimate = (parsed.bytes / (1024 * 1024 * 1024)) * 0.02;
+      const costEstimate = (parsed.bytes / (1024 * 1024 * 1024)) * ESTIMATED_COST_PER_GB_MONTH;
       const allowanceSet = result.ready;
 
       return {
@@ -291,10 +292,16 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
     async getStorageStats(input) {
       const stats = await index.getStats(input?.agentId);
       return {
-        ...stats,
+        totalFiles: stats.totalFiles,
+        totalSizeBytes: stats.totalSizeBytes,
+        totalSizeGb: stats.totalSizeGb,
+        totalMemories: stats.totalMemories,
         activeDeals: stats.totalFiles,
         expiredDeals: 0,
-        totalCostUsdfc: "0"
+        totalCostUsdfc: "0",
+        oldestFile: stats.oldestFile,
+        newestFile: stats.newestFile,
+        tagsUsed: stats.tagsUsed
       };
     },
 
@@ -306,7 +313,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const months = days / 30;
       const priceAsOf = new Date().toISOString();
 
-      let costPerGbMonthRaw = 0.02;
+      let costPerGbMonthRaw = ESTIMATED_COST_PER_GB_MONTH;
       let priceSource: "live" | "estimated" = "estimated";
 
       if (backend.getPricing) {
@@ -341,12 +348,13 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       };
     },
 
-    async listDeals() {
-      const files = await index.listFiles({ limit: 100 });
-      const VERIFY_LIMIT = 20;
+    async listDeals(input) {
+      const parsed = listDealsInputSchema.parse(input ?? {});
+      const page = await index.listFiles({ limit: parsed.limit ?? 100 });
+      const VERIFY_LIMIT = Math.min(page.files.length, 20);
 
       const deals = await Promise.all(
-        files.files.map(async (f, i) => {
+        page.files.map(async (f, i) => {
           if (i < VERIFY_LIMIT) {
             const verifyResult = await backend.verify({ cid: f.cid });
             return {

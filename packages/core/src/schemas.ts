@@ -90,7 +90,7 @@ export const estimateCostInputSchema = z.object({
 export const listDealsInputSchema = z.object({
   status: z.enum(["active", "expired", "all"]).optional(),
   limit: z.number().int().min(1).max(100).optional()
-}).optional();
+});
 
 export const getProofInputSchema = z.object({
   cid: cidSchema

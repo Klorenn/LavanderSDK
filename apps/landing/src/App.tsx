@@ -253,7 +253,7 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          {['74 tests passing', '7 packages', 'MIT License', 'ProPGF Batch 3'].map(s => <span key={s} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}</span>)}
+          {['MIT License', 'ProPGF Batch 3', 'Open Source', 'TypeScript'].map(s => <span key={s} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}</span>)}
         </motion.div>
       </motion.div>
 
