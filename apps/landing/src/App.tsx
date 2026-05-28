@@ -231,6 +231,7 @@ const terminalLines = [
 function Terminal() {
   const [visibleLines, setVisibleLines] = useState(0);
   const [started, setStarted] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setStarted(true), 500);
@@ -245,6 +246,12 @@ function Terminal() {
     return () => clearTimeout(timer);
   }, [started, visibleLines]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [visibleLines]);
+
   const allDone = visibleLines >= terminalLines.length;
 
   return (
@@ -255,7 +262,7 @@ function Terminal() {
         <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
         <span className="ml-3 text-[10px] text-muted-foreground font-mono tracking-wider">fetcher — zsh</span>
       </div>
-      <div className="flex-1 p-4 md:p-6 space-y-0.5 font-mono overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 p-4 md:p-6 space-y-0.5 font-mono overflow-y-auto">
         {terminalLines.slice(0, visibleLines).map((line, i) => (
           <motion.div
             key={i}
