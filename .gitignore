@@ -13,3 +13,4 @@ temp/
 *.log
 CLAUDE.md
 ChatGPT Image*.png
+/OpenGraph*.png
