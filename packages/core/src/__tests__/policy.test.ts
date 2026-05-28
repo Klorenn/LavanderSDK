@@ -9,8 +9,8 @@ const backend: StorageBackend = {
   async verify(input) {
     return { ...input, verified: false, status: "missing", copies: 0, checkedAt: new Date(0).toISOString(), evidence: [], integrity: false, accessible: false };
   },
-  async prepareStorage() { return { ready: true, message: "ready" }; },
-  async getBalance() { return {}; }
+  async prepareStorage() { return { ready: true, costUsdfc: "0", balanceBefore: "0", allowanceSet: true, message: "ready" }; },
+  async getBalance() { return { balanceUsdfc: "0", balanceFil: "0", pendingPayments: "0", availableUsdfc: "0" }; }
 };
 
 const LONG_TEXT = "This is a test string that needs to be at least 127 bytes long to pass the Filecoin minimum size requirement enforced by the SDK layer.";

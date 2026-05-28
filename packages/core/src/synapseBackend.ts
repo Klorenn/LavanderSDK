@@ -105,13 +105,14 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
     async prepareStorage(input): Promise<PrepareStorageResult> {
       const prep = await synapse.storage.prepare({ dataSize: BigInt(input.bytes) });
       const ready = Boolean(prep.costs?.ready ?? !prep.transaction);
+      const costEstimate = (Number(input.bytes) / (1024 * 1024 * 1024)) * 0.02;
 
       if (!prep.transaction) {
-        return { ready, message: "Storage account is already prepared." };
+        return { ready, costUsdfc: costEstimate.toFixed(6), balanceBefore: "", allowanceSet: true, message: "Storage account is already prepared." };
       }
 
       const { hash } = await prep.transaction.execute();
-      return { ready: true, transactionHash: hash, message: "Storage account prepared." };
+      return { ready: true, costUsdfc: costEstimate.toFixed(6), balanceBefore: "", allowanceSet: true, transactionHash: hash, message: "Storage account prepared." };
     },
 
     async getBalance(): Promise<BalanceResult> {

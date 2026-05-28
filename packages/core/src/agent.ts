@@ -116,7 +116,23 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
     async prepareStorage(input: PrepareStorageInput) {
       const parsed = prepareStorageInputSchema.parse(input);
       assertPaidOperationAllowed(policy, parsed.bytes, parsed.confirmPaidOperation);
-      return backend.prepareStorage(parsed);
+      const result = await backend.prepareStorage(parsed);
+      const balance = await backend.getBalance();
+      const costEstimate = (parsed.bytes / (1024 * 1024 * 1024)) * 0.02;
+      const allowanceSet = result.ready;
+
+      return {
+        ready: result.ready,
+        costUsdfc: costEstimate.toFixed(6),
+        balanceBefore: balance.availableUsdfc ?? "0",
+        allowanceSet,
+        message: allowanceSet ? "Storage account prepared." : "Storage account needs preparation.",
+        ...(allowanceSet ? {} : {
+          shortfall: costEstimate.toFixed(6),
+          actionNeeded: "Deposit USDFC using Filecoin Pay or faucet, then retry."
+        }),
+        transactionHash: result.transactionHash
+      };
     },
 
     async getBalance() {
@@ -132,7 +148,16 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
 
     async listFiles(input) {
       const parsed = listFilesInputSchema.parse(input);
-      return index.listFiles({ tag: parsed.tag, limit: parsed.limit, before: parsed.before });
+      const result = await index.listFiles({ tag: parsed.tag, limit: parsed.limit, before: parsed.before });
+      return {
+        files: result.files.map((f) => ({
+          ...f,
+          dealStatus: "active",
+          url: `https://w3s.link/ipfs/${f.cid}`
+        })),
+        total: result.total,
+        hasMore: result.hasMore
+      };
     },
 
     async deleteFile(input) {
@@ -257,7 +282,9 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const stats = await index.getStats(input?.agentId);
       return {
         ...stats,
-        activeDeals: stats.totalFiles
+        activeDeals: stats.totalFiles,
+        expiredDeals: 0,
+        totalCostUsdfc: "0"
       };
     },
 
@@ -268,15 +295,23 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const gb = parsed.sizeBytes / (1024 * 1024 * 1024);
       const costPerGbMonth = 0.02;
       const months = days / 30;
-      const estimated = gb * costPerGbMonth * months * copies;
+      const storageCost = gb * costPerGbMonth * months * copies;
+      const retrievalCost = storageCost * 0.1;
+      const providerFee = storageCost * 0.05;
+      const estimated = storageCost + retrievalCost + providerFee;
       const balance = await backend.getBalance();
-      const currentBalance = balance.balanceUsdfc ?? "0";
+      const currentBalance = balance.availableUsdfc ?? "0";
 
       return {
         estimatedCostUsdfc: estimated.toFixed(6),
         costPerGbMonth: costPerGbMonth.toString(),
+        currentBalance,
         canAfford: parseFloat(currentBalance) >= estimated,
-        currentBalance
+        breakdown: {
+          storageCost: storageCost.toFixed(6),
+          retrievalCost: retrievalCost.toFixed(6),
+          providerFee: providerFee.toFixed(6)
+        }
       };
     },
 

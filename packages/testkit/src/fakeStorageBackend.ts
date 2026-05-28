@@ -52,7 +52,7 @@ export function createFakeStorageBackend(options: FakeStorageBackendOptions = {}
     },
 
     async prepareStorage(): Promise<PrepareStorageResult> {
-      return { ready: true, message: "fake backend ready" };
+      return { ready: true, costUsdfc: "0.000002", balanceBefore: "100", allowanceSet: true, message: "fake backend ready" };
     },
 
     async getBalance(): Promise<BalanceResult> {

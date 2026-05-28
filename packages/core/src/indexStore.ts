@@ -72,6 +72,7 @@ export class FetcherIndex {
   async listFiles(options: { tag?: string; limit?: number; before?: string } = {}): Promise<{
     files: IndexedFile[];
     total: number;
+    hasMore: boolean;
   }> {
     await this.ensureLoaded();
     let files = [...this.data.files];
@@ -88,9 +89,10 @@ export class FetcherIndex {
     files.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     const total = files.length;
     const limit = options.limit ?? 20;
+    const hasMore = files.length > limit;
     files = files.slice(0, limit);
 
-    return { files, total };
+    return { files, total, hasMore };
   }
 
   async removeFile(cid: string): Promise<boolean> {
@@ -194,33 +196,40 @@ export class FetcherIndex {
   async getStats(agentId?: string): Promise<{
     totalFiles: number;
     totalSizeBytes: number;
+    totalSizeGb: number;
     totalMemories: number;
     oldestFile?: string;
     newestFile?: string;
+    tagsUsed: string[];
   }> {
     await this.ensureLoaded();
-    const files = agentId ? this.data.files : this.data.files;
     const memories = agentId ? this.data.memories.filter((m) => m.agentId === agentId) : this.data.memories;
 
     let totalSizeBytes = 0;
     let oldestFile: string | undefined;
     let newestFile: string | undefined;
+    const tagsSet = new Set<string>();
 
-    if (files.length > 0) {
-      const sorted = [...files].sort(
+    if (this.data.files.length > 0) {
+      const sorted = [...this.data.files].sort(
         (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
       oldestFile = sorted[0].timestamp;
       newestFile = sorted[sorted.length - 1].timestamp;
-      totalSizeBytes = files.reduce((s, f) => s + f.size, 0);
+      totalSizeBytes = this.data.files.reduce((s, f) => s + f.size, 0);
+      for (const f of this.data.files) {
+        for (const t of f.tags) tagsSet.add(t);
+      }
     }
 
     return {
-      totalFiles: files.length,
+      totalFiles: this.data.files.length,
       totalSizeBytes,
+      totalSizeGb: +(totalSizeBytes / (1024 * 1024 * 1024)).toFixed(2),
       totalMemories: memories.length,
       oldestFile,
-      newestFile
+      newestFile,
+      tagsUsed: [...tagsSet]
     };
   }
 }

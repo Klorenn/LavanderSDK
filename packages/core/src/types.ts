@@ -112,9 +112,13 @@ export type VerifyResult = {
 
 export type PrepareStorageResult = {
   ready: boolean;
-  requiredDeposit?: string;
-  transactionHash?: string;
+  costUsdfc: string;
+  balanceBefore: string;
+  allowanceSet: boolean;
   message: string;
+  shortfall?: string;
+  actionNeeded?: string;
+  transactionHash?: string;
 };
 
 export type BalanceResult = {
@@ -131,8 +135,11 @@ export type ListFilesResult = {
     size: number;
     timestamp: string;
     tags: string[];
+    dealStatus: string;
+    url: string;
   }>;
   total: number;
+  hasMore: boolean;
 };
 
 export type DeleteFileResult = {
@@ -200,11 +207,14 @@ export type GetStorageStatsInput = {
 export type StorageStatsResult = {
   totalFiles: number;
   totalSizeBytes: number;
+  totalSizeGb: number;
   totalMemories: number;
   activeDeals: number;
-  totalCostUsdfc?: string;
+  expiredDeals: number;
+  totalCostUsdfc: string;
   oldestFile?: string;
   newestFile?: string;
+  tagsUsed: string[];
 };
 
 export type EstimateCostInput = {
@@ -216,8 +226,13 @@ export type EstimateCostInput = {
 export type EstimateCostResult = {
   estimatedCostUsdfc: string;
   costPerGbMonth: string;
+  currentBalance: string;
   canAfford: boolean;
-  currentBalance?: string;
+  breakdown: {
+    storageCost: string;
+    retrievalCost: string;
+    providerFee: string;
+  };
 };
 
 export type ListDealsInput = {
