@@ -36,6 +36,7 @@ export type IndexStats = {
   tagsUsed: string[];
 };
 
+// updateMemory is intentionally absent: agent.ts composes updates via retrieveMemory + storeMemory.
 export interface IndexBackend {
   addFile(file: IndexedFile): Promise<void>;
   listFiles(options: ListFilesOptions): Promise<ListFilesPage>;
