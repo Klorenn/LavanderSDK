@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { Button } from './components/ui/button';
 
@@ -239,6 +239,261 @@ function Ticker() {
   );
 }
 
+const codeSnippets = {
+  mcp: `{
+  "mcpServers": {
+    "fetcher": {
+      "command": "npx",
+      "args": ["@filecoin-agent/mcp"],
+      "env": {
+        "FILECOIN_PRIVATE_KEY": "0x...",
+        "FILECOIN_NETWORK": "calibration",
+        "FILECOIN_AGENT_ALLOW_PAID": "true"
+      }
+    }
+  }
+}`,
+  langchain: `import { createFetcherTools } from "@filecoin-agent/langchain";
+import { createSynapseBackend } from "@filecoin-agent/core";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+
+const backend = await createSynapseBackend({
+  privateKey: process.env.FILECOIN_PRIVATE_KEY
+});
+
+const tools = createFetcherTools({
+  backend,
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const agent = await createOpenAIFunctionsAgent({
+  llm: new ChatOpenAI({ model: "gpt-4o" }),
+  tools
+});
+
+const executor = new AgentExecutor({ agent, tools });
+
+await executor.invoke({
+  input: "Store the quarterly report on Filecoin"
+});`,
+  llamaindex: `import { createFetcherTools } from "@filecoin-agent/llamaindex";
+import { createSynapseBackend } from "@filecoin-agent/core";
+import { OpenAIAgent, OpenAI } from "llamaindex";
+
+const backend = await createSynapseBackend({
+  privateKey: process.env.FILECOIN_PRIVATE_KEY
+});
+
+const tools = createFetcherTools({
+  backend,
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const agent = new OpenAIAgent({
+  llm: new OpenAI({ model: "gpt-4o" }),
+  tools
+});
+
+const response = await agent.chat({
+  message: "What files have I stored?"
+});`,
+  sdk: `import { Fetcher } from "@filecoin-agent/sdk";
+import { createSynapseBackend } from "@filecoin-agent/core";
+
+const fetcher = new Fetcher({
+  backend: await createSynapseBackend({
+    privateKey: process.env.FILECOIN_PRIVATE_KEY
+  }),
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const { cid, url } = await fetcher.store({
+  content: "Hello Filecoin",
+  filename: "hello.txt"
+});
+
+await fetcher.memory.store({
+  agentId: "my-agent",
+  memoryKey: "preferences",
+  data: { theme: "dark" }
+});
+
+const stats = await fetcher.stats();`
+};
+
+const tabs = [
+  { id: 'mcp', label: 'MCP', color: 'bg-accent', textColor: 'text-accent' },
+  { id: 'langchain', label: 'LangChain', color: 'bg-[#5b8dff]', textColor: 'text-[#5b8dff]' },
+  { id: 'llamaindex', label: 'LlamaIndex', color: 'bg-[#a87dd4]', textColor: 'text-[#a87dd4]' },
+  { id: 'sdk', label: 'SDK', color: 'bg-[#7bd4a8]', textColor: 'text-[#7bd4a8]' },
+] as const;
+
+type TabId = typeof tabs[number]['id'];
+
+function highlightCode(code: string): string {
+  return code
+    .replace(/(import\s+.*?from\s+["'].*?["'])/g, '<span class="text-[#d7c6ff]">$1</span>')
+    .replace(/(const\s+\w+|let\s+\w+|await\s+)/g, '<span class="text-[#5b8dff]">$1</span>')
+    .replace(/(async\s+|function\s+|class\s+|new\s+)/g, '<span class="text-[#5b8dff]">$1</span>')
+    .replace(/(["'])((?:(?=(\\?))\3.)*?)\1/g, '<span class="text-[#7bd4a8]">$1$2$1</span>')
+    .replace(/(FILECOIN_PRIVATE_KEY|FILECOIN_NETWORK|FILECOIN_AGENT_ALLOW_PAID)/g, '<span class="text-[#ffd166]">$1</span>')
+    .replace(/(0x\.\.\.)/g, '<span class="text-[#ff6b8b]">$1</span>')
+    .replace(/(calibration|mainnet|true|false)/g, '<span class="text-[#ff6b8b]">$1</span>')
+    .replace(/({|\}|\(|\))/g, '<span class="text-foreground/50">$1</span>')
+    .replace(/(process\.env)/g, '<span class="text-[#a87dd4]">$1</span>')
+    .replace(/(\.store\(|\.memory\.|\.stats\(|\.chat\(|\.invoke\(|\.retrieve\()/g, '<span class="text-accent">$1</span>')
+    .replace(/("""|`)/g, '<span class="text-foreground/50">$1</span>')
+    .replace(/(models)/g, '<span class="text-[#d7c6ff]">$1</span>');
+}
+
+function CodeDemo() {
+  const [activeTab, setActiveTab] = useState<TabId>('mcp');
+  const [displayedCode, setDisplayedCode] = useState('');
+  const [charIndex, setCharIndex] = useState(0);
+  const [typing, setTyping] = useState(true);
+  const intervalRef = useRef<number>(0);
+  const autoCycleRef = useRef<number>(0);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const snippet = codeSnippets[activeTab];
+
+  useEffect(() => {
+    setDisplayedCode('');
+    setCharIndex(0);
+    setTyping(true);
+
+    intervalRef.current = window.setInterval(() => {
+      setCharIndex((prev) => {
+        if (prev >= snippet.length) {
+          setTyping(false);
+          window.clearInterval(intervalRef.current);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 8);
+
+    return () => window.clearInterval(intervalRef.current);
+  }, [activeTab]);
+
+  useEffect(() => {
+    setDisplayedCode(snippet.slice(0, charIndex));
+  }, [charIndex, snippet]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting && autoCycleRef.current) {
+          window.clearInterval(autoCycleRef.current);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  const switchTab = (id: TabId) => {
+    window.clearInterval(intervalRef.current);
+    window.clearInterval(autoCycleRef.current);
+    setActiveTab(id);
+  };
+
+  return (
+    <section ref={sectionRef} id="quickstart" className="px-8 py-24 md:px-28 md:py-32">
+      <div className="mx-auto max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <h2 className="font-serif text-4xl leading-tight text-foreground md:text-5xl">
+            Pick your framework. It just works.
+          </h2>
+          <p className="mt-4 mx-auto max-w-xl text-lg text-muted-foreground">
+            Same 17 tools. Same semantics. Four integrations. One <code className="rounded bg-accent-soft px-1.5 py-0.5 text-xs text-accent">npm install</code>.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 36 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="mt-12 rounded-2xl border border-border/60 bg-[#05040b] shadow-[0_30px_90px_rgba(7,6,16,0.7)] overflow-hidden"
+        >
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-border/40">
+            <span className="h-3 w-3 rounded-full bg-[#ff6b8b]" />
+            <span className="h-3 w-3 rounded-full bg-[#ffd166]" />
+            <span className="h-3 w-3 rounded-full bg-[#7bd4a8]" />
+            <div className="ml-6 flex gap-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => switchTab(tab.id)}
+                  className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? `${tab.textColor} bg-white/5`
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <motion.div
+                      layoutId="tab-indicator"
+                      className={`absolute bottom-0 left-2 right-2 h-0.5 ${tab.color} rounded-full`}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-5 md:p-8 font-mono text-xs md:text-sm leading-relaxed">
+            <pre className="whitespace-pre-wrap text-foreground/85">
+              <code dangerouslySetInnerHTML={{ __html: highlightCode(displayedCode) }} />
+              {typing && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
+                  className="inline-block w-2 h-4 bg-accent ml-0.5 align-middle rounded-sm"
+                />
+              )}
+            </pre>
+          </div>
+
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border/40 text-[11px] text-muted-foreground">
+            <span>{activeTab === 'mcp' ? '~/.config/claude/claude_desktop_config.json' : activeTab === 'langchain' ? 'src/agent.ts' : activeTab === 'llamaindex' ? 'src/agent.ts' : 'src/index.ts'}</span>
+            <span className="flex items-center gap-3">
+              <span className="text-[#7bd4a8]">{displayedCode.length} / {snippet.length} chars</span>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  window.clearInterval(intervalRef.current);
+                  setDisplayedCode(snippet);
+                  setCharIndex(snippet.length);
+                  setTyping(false);
+                }}
+                className="rounded bg-white/5 px-2 py-1 text-foreground/60 hover:text-foreground transition"
+              >
+                skip typing
+              </motion.button>
+            </span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function ToolsSection() {
   return (
     <section id="tools" className="px-8 py-24 md:px-28 md:py-32">
@@ -443,6 +698,7 @@ export default function App() {
       <CustomCursor />
       <Hero />
       <Ticker />
+      <CodeDemo />
       <ToolsSection />
       <IntegrationsSection />
       <TestimonialSection />
