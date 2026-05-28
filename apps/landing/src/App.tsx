@@ -546,18 +546,18 @@ function PricingSection() {
 }
 
 function DocsSection() {
-  const docTabs = ['Quickstart', 'MCP Setup', 'API Reference', 'Agent Memory', 'Security'] as const;
-  const [docTab, setDocTab] = useState<typeof docTabs[number]>('Quickstart');
+  const docTabs = ['Overview', 'Quickstart', 'MCP Setup', 'Architecture', 'API Reference', 'Agent Memory', 'Integrations', 'Security'] as const;
+  const [docTab, setDocTab] = useState<typeof docTabs[number]>('Overview');
 
   return (
     <section id="docs" className="px-8 py-24 md:px-28 md:py-32">
       <div className="mx-auto max-w-4xl">
-        <SectionHeading label="Documentation" title="Everything you need" subtitle="From zero to Filecoin in five minutes." />
+        <SectionHeading label="Documentation" title="Everything you need" subtitle="From why Fetcher exists to every tool, integration, and safety default." />
 
-        <div className="flex flex-wrap gap-1 mb-12 border-b border-border pb-4">
+        <div className="flex flex-wrap gap-1 mb-12 border-b border-border pb-4 overflow-x-auto">
           {docTabs.map(t => (
             <button key={t} onClick={() => setDocTab(t)}
-              className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`relative px-3 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 docTab === t ? 'text-accent bg-accent/5' : 'text-muted-foreground hover:text-foreground'
               }`}>
               {t}
@@ -567,88 +567,257 @@ function DocsSection() {
         </div>
 
         <AnimatePresence mode="wait">
-          {/* Quickstart */}
-          {docTab === 'Quickstart' && (
-            <motion.div key="quickstart" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <p className="text-muted-foreground mb-8 leading-7">Four steps from zero to storing data on Filecoin with your AI agent.</p>
-              <div className="grid gap-4 md:grid-cols-2">
-                {[
-                  { step: '1', title: 'Get a wallet', desc: 'Add Filecoin Calibration to MetaMask. RPC: api.calibration.node.glif.io/rpc/v1, Chain ID: 314159. Get test FIL from faucet.calibration.fildev.network.' },
-                  { step: '2', title: 'Install', desc: 'npm install @fetcher-fil/core. Add your adapter: @fetcher-fil/mcp for Claude Desktop, @fetcher-fil/langchain, or @fetcher-fil/llamaindex.' },
-                  { step: '3', title: 'Configure', desc: 'Set FILECOIN_PRIVATE_KEY env var. Start on Calibration testnet. Enable FILECOIN_AGENT_ALLOW_PAID=true.' },
-                  { step: '4', title: 'Use it', desc: 'MCP: add JSON config. Code: createFetcherTools({ backend, spendingPolicy }). Your agent has 17 tools.' },
-                ].map(s => (
-                  <div key={s.step} className="rounded-xl border border-border bg-background p-5">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent">{s.step}</span>
-                      <h4 className="font-semibold text-foreground">{s.title}</h4>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-6">{s.desc}</p>
+
+          {/* ── Overview ──────────────────────────────────── */}
+          {docTab === 'Overview' && <OverviewDoc />}
+
+          {/* ── Quickstart ────────────────────────────────── */}
+          {docTab === 'Quickstart' && <QuickstartDoc />}
+
+          {/* ── MCP Setup ─────────────────────────────────── */}
+          {docTab === 'MCP Setup' && <McpDoc />}
+
+          {/* ── Architecture ──────────────────────────────── */}
+          {docTab === 'Architecture' && <ArchitectureDoc />}
+
+          {/* ── API Reference ─────────────────────────────── */}
+          {docTab === 'API Reference' && <ApiDoc />}
+
+          {/* ── Agent Memory ──────────────────────────────── */}
+          {docTab === 'Agent Memory' && <MemoryDoc />}
+
+          {/* ── Integrations ──────────────────────────────── */}
+          {docTab === 'Integrations' && <IntegrationsDoc />}
+
+          {/* ── Security ──────────────────────────────────── */}
+          {docTab === 'Security' && <SecurityDoc />}
+
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
+
+function DocSection({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div key={Math.random()} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} className="space-y-16">
+      {children}
+    </motion.div>
+  );
+}
+
+function DocBlock({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h2 className="font-serif text-2xl md:text-3xl text-foreground mb-2">{title}</h2>
+      <div className="text-muted-foreground leading-7 text-sm md:text-base space-y-4">{children}</div>
+    </div>
+  );
+}
+
+/* ── Overview Tab ──────────────────────────────────────────── */
+
+function OverviewDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="What is Fetcher?">
+        <p>Fetcher is an <span className="text-accent font-semibold">open-source TypeScript SDK</span> that connects AI agents — Claude, GPT-4o, Gemini, LangChain agents, LlamaIndex agents — to <span className="text-accent font-semibold">Filecoin Onchain Cloud</span>, the world's largest decentralized storage network.</p>
+        <p>One <code className="rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">npm install</code>. One config line. Your agent gains 17 powerful tools to store, retrieve, verify, and remember data — with cryptographic PDP proofs every hour.</p>
+      </DocBlock>
+
+      <DocBlock title="The problem it solves">
+        <p>AI agents today have <span className="text-accent font-semibold">five critical gaps</span> that no other SDK addresses simultaneously:</p>
+        <div className="grid gap-3 not-prose">
+          {[
+            { gap: 'No Filecoin MCP Server', fix: 'Add one JSON block to Claude Desktop — 17 tools appear automatically.' },
+            { gap: 'No LangChain Toolkit for Filecoin', fix: 'createFetcherTools() returns 17 native DynamicStructuredTools.' },
+            { gap: 'No LlamaIndex Tools for Filecoin', fix: 'createFetcherTools() returns 17 native FunctionTools with JSON Schema.' },
+            { gap: 'No persistent agent memory', fix: 'Structured, versioned, TTL-aware memory that persists between sessions.' },
+            { gap: 'No storage observability', fix: 'get_storage_stats, estimate_cost, list_deals, get_balance — dashboard for agents.' },
+          ].map(g => (
+            <div key={g.gap} className="rounded-lg border border-border bg-background p-4">
+              <p className="text-xs font-semibold text-accent uppercase tracking-wider mb-1">{g.gap}</p>
+              <p className="text-sm text-muted-foreground">{g.fix}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+
+      <DocBlock title="Why Filecoin Onchain Cloud?">
+        <p>Filecoin is not just "decentralized storage." With <span className="text-accent font-semibold">Synapse SDK</span> and Filecoin Onchain Cloud, it becomes a production-grade backend:</p>
+        <ul className="list-disc pl-5 space-y-2">
+          <li><strong>PDP (Proof of Data Possession)</strong> — Every file is cryptographically verified every hour on-chain. Call <code className="rounded bg-accent/10 px-1 text-xs text-accent">verify_cid</code> and get mathematical proof the data exists and hasn't been altered.</li>
+          <li><strong>Filecoin Pay</strong> — Programmable on-chain payments in USDFC. Check balances and estimate costs before spending.</li>
+          <li><strong>Permanent addressing</strong> — Every file gets a permanent CID. No broken links. No server migrations. The CID is the file.</li>
+        </ul>
+      </DocBlock>
+
+      <DocBlock title="What Fetcher is NOT">
+        <p>Fetcher does not replace Synapse SDK or the Filecoin protocol. It is a thin agent-native layer that gives AI frameworks a safe, consistent contract for storage. It does not manage wallets, encrypt data, delete data from Filecoin, or provide a Python/Go SDK (on the roadmap).</p>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── Quickstart Tab ────────────────────────────────────────── */
+
+function QuickstartDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Four steps to Filecoin">
+        <p className="mb-6">From zero to storing data on Filecoin with your AI agent — in under five minutes.</p>
+        <div className="grid gap-4 md:grid-cols-2 not-prose">
+          {[
+            { step: '1', title: 'Get a wallet', desc: 'Add Filecoin Calibration to MetaMask. RPC: api.calibration.node.glif.io/rpc/v1, Chain ID: 314159. Get test FIL from faucet.calibration.fildev.network.' },
+            { step: '2', title: 'Install', desc: 'npm install @fetcher-fil/core. Add your adapter: @fetcher-fil/mcp for Claude Desktop, @fetcher-fil/langchain for LangChain, or @fetcher-fil/llamaindex.' },
+            { step: '3', title: 'Configure', desc: 'Set FILECOIN_PRIVATE_KEY env var. Start on Calibration testnet. Enable FILECOIN_AGENT_ALLOW_PAID=true when ready.' },
+            { step: '4', title: 'Use it', desc: 'MCP: add JSON config. Code: createFetcherTools({ backend, spendingPolicy }). Your agent has 17 tools.' },
+          ].map(s => (
+            <div key={s.step} className="rounded-xl border border-border bg-background p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/15 text-xs font-bold text-accent shrink-0">{s.step}</span>
+                <h4 className="font-semibold text-foreground">{s.title}</h4>
+              </div>
+              <p className="text-sm text-muted-foreground leading-6">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── MCP Setup Tab ─────────────────────────────────────────── */
+
+function McpDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Claude Desktop Configuration">
+        <p>Add this JSON block to your Claude Desktop config file. Restart Claude. Your agent now has 17 Filecoin tools available in every conversation.</p>
+        <div className="not-prose mt-4">
+          <CodeBlock code={codeSnippets.mcp} language="JSON" filename="claude_desktop_config.json" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="Environment Variables">
+        <div className="not-prose grid gap-4 md:grid-cols-2">
+          {[
+            { label: 'Required', var: 'FILECOIN_PRIVATE_KEY', desc: 'Your EVM wallet private key (0x...) — used to sign storage transactions.' },
+            { label: 'Optional', var: 'FILECOIN_NETWORK', desc: 'Network to use. calibration (default, testnet) or mainnet (production).' },
+            { label: 'Optional', var: 'FILECOIN_AGENT_ALLOW_PAID', desc: 'Set to true to enable storage payments. Blocked by default for safety.' },
+            { label: 'Optional', var: 'FILECOIN_AGENT_ID', desc: 'Default agent ID for memory operations. Useful when running multiple agents.' },
+          ].map(e => (
+            <div key={e.var} className="rounded-lg border border-border bg-background p-4">
+              <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold text-accent uppercase">{e.label}</span>
+              <code className="mt-2 block text-xs font-semibold text-foreground">{e.var}</code>
+              <p className="mt-1 text-xs text-muted-foreground leading-5">{e.desc}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── Architecture Tab ──────────────────────────────────────── */
+
+function ArchitectureDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Package Architecture">
+        <p>The SDK is a monorepo of 7 packages. Adapters depend on <code className="rounded bg-accent/10 px-1 text-xs text-accent">@fetcher-fil/core</code>. Only core knows about Synapse.</p>
+        <div className="not-prose overflow-x-auto mt-4">
+          <table className="w-full text-sm">
+            <thead><tr className="border-b border-border">{['Package', 'Purpose', 'Dependencies'].map(h => <th key={h} className="px-4 py-2 text-left font-medium text-foreground">{h}</th>)}</tr></thead>
+            <tbody className="divide-y divide-border">
+              {[
+                ['@fetcher-fil/core', 'Core API, types, schemas, Synapse backend, IndexBackend interface', '@filoz/synapse-sdk, viem, zod'],
+                ['@fetcher-fil/mcp', 'MCP stdio server — npx @fetcher-fil/mcp', '@modelcontextprotocol/server, core'],
+                ['@fetcher-fil/langchain', '17 LangChain DynamicStructuredTools', '@langchain/core, core'],
+                ['@fetcher-fil/llamaindex', '17 LlamaIndex FunctionTools', 'llamaindex, core'],
+                ['@fetcher-fil/sdk', 'Direct programmatic API — Fetcher class', 'core'],
+                ['@fetcher-fil/testkit', 'Fake backend + MemoryIndexBackend for testing', 'core'],
+                ['@fetcher-fil/landing', 'Documentation site (React + Vite + Tailwind)', '—'],
+              ].map(([pkg, purpose, deps]) => (
+                <tr key={pkg} className="bg-background"><td className="px-4 py-2.5 font-mono text-xs text-accent">{pkg}</td><td className="px-4 py-2.5 text-muted-foreground">{purpose}</td><td className="px-4 py-2.5 text-xs text-muted-foreground">{deps}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DocBlock>
+
+      <DocBlock title="Key Design Decisions">
+        <div className="grid gap-4 md:grid-cols-2 not-prose">
+          {[
+            { t: 'StorageBackend interface', d: 'Pluggable backend. Production uses createSynapseBackend(). Tests use createFakeStorageBackend(). No wallet needed for development.' },
+            { t: 'IndexBackend interface', d: 'Three implementations: FileIndexBackend (local JSON), MemoryIndexBackend (in-memory tests), FilecoinIndexBackend (index on Filecoin — portable).' },
+            { t: 'Spending policy enforced once', d: 'Every paid operation passes through assertPaidOperationAllowed() in core. Paid ops blocked by default. Confirmation required.' },
+            { t: 'Adapters depend on core', d: 'MCP, LangChain, LlamaIndex, SDK import from core. They never touch Synapse directly. Synapse can evolve independently.' },
+          ].map(i => (
+            <div key={i.t} className="rounded-lg border border-border bg-background p-4">
+              <h4 className="font-semibold text-foreground text-sm">{i.t}</h4>
+              <p className="mt-1 text-xs text-muted-foreground leading-5">{i.d}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── API Reference Tab ─────────────────────────────────────── */
+
+function ApiDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="All 17 Tools">
+        <p>Every tool is available identically across MCP, LangChain, LlamaIndex, and SDK. The semantics never change — only the calling convention differs by framework.</p>
+        <div className="not-prose space-y-10 mt-6">
+          {allTools.map(({ group, tools: groupTools }) => (
+            <div key={group}>
+              <h3 className="font-mono text-sm font-semibold text-accent mb-4 uppercase tracking-wider">{group}</h3>
+              <div className="space-y-3">
+                {groupTools.map(t => (
+                  <div key={t.name} className="rounded-lg border border-border bg-background p-4">
+                    <code className="font-mono text-sm font-bold text-accent">{t.name}</code>
+                    <p className="mt-1.5 text-xs text-muted-foreground leading-5">{t.desc}</p>
                   </div>
                 ))}
               </div>
-            </motion.div>
-          )}
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
 
-          {/* MCP Setup */}
-          {docTab === 'MCP Setup' && (
-            <motion.div key="mcp" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <p className="text-muted-foreground mb-8 leading-7">Add this to your Claude Desktop config. Restart Claude. Your agent now has 17 Filecoin tools.</p>
-              <CodeBlock code={codeSnippets.mcp} language="JSON" filename="claude_desktop_config.json" />
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {[
-                  { label: 'Required', var: 'FILECOIN_PRIVATE_KEY', desc: 'Your EVM wallet private key' },
-                  { label: 'Optional', var: 'FILECOIN_NETWORK', desc: 'calibration (default) or mainnet' },
-                  { label: 'Optional', var: 'FILECOIN_AGENT_ALLOW_PAID', desc: 'Set true to enable storage payments' },
-                ].map(e => (
-                  <div key={e.var} className="rounded-lg border border-border bg-background p-4">
-                    <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold text-accent uppercase">{e.label}</span>
-                    <code className="mt-2 block text-xs font-semibold text-foreground">{e.var}</code>
-                    <p className="mt-1 text-xs text-muted-foreground">{e.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+/* ── Agent Memory Tab ──────────────────────────────────────── */
 
-          {/* API Reference */}
-          {docTab === 'API Reference' && (
-            <motion.div key="api" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <p className="text-muted-foreground mb-8 leading-7">All 17 tools — identical across MCP, LangChain, LlamaIndex, and SDK.</p>
-              <div className="space-y-10">
-                {allTools.map(({ group, tools: groupTools }) => (
-                  <div key={group}>
-                    <h3 className="font-mono text-sm font-semibold text-accent mb-4 uppercase tracking-wider">{group}</h3>
-                    <div className="space-y-3">
-                      {groupTools.map(t => (
-                        <div key={t.name} className="rounded-lg border border-border bg-background p-4">
-                          <code className="font-mono text-sm font-bold text-accent">{t.name}</code>
-                          <p className="mt-1.5 text-xs text-muted-foreground leading-5">{t.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+function MemoryDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Fetcher's Differentiator">
+        <p>Structured, versioned, TTL-aware memory that persists between agent sessions on Filecoin. No other SDK has this. Each memory entry is stored as a JSON object on Filecoin, indexed locally by agent_id and memory_key.</p>
+        <div className="grid gap-4 md:grid-cols-2 not-prose mt-4">
+          {[
+            { t: 'Versioned', d: 'Every store_memory increments the version counter. Track changes and detect conflicts over time.' },
+            { t: 'TTL-aware', d: 'Set ttlDays to auto-expire memories. Expired entries return found: false without errors.' },
+            { t: 'Patch updates', d: 'update_memory merges specific fields without replacing the entire object. Only changed keys are re-uploaded to Filecoin.' },
+            { t: 'Fallback values', d: 'retrieve_memory accepts an optional fallback object — clean agent code without null checks.' },
+          ].map(i => (
+            <div key={i.t} className="rounded-lg border border-border bg-background p-4">
+              <h4 className="font-semibold text-foreground text-sm">{i.t}</h4>
+              <p className="mt-1 text-xs text-muted-foreground leading-5">{i.d}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
 
-          {/* Agent Memory */}
-          {docTab === 'Agent Memory' && (
-            <motion.div key="memory" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <p className="text-muted-foreground mb-8 leading-7">
-                <span className="text-accent font-semibold">Fetcher's differentiator.</span> Structured, versioned, TTL-aware memory that persists between agent sessions on Filecoin. Nobody else has this.
-              </p>
-              <div className="grid gap-4 md:grid-cols-2 mb-8">
-                {[
-                  { t: 'Versioned', d: 'Every store_memory increments the version counter. Track changes and detect conflicts over time.' },
-                  { t: 'TTL-aware', d: 'Set ttlDays to auto-expire memories. Expired entries return found: false without error.' },
-                  { t: 'Patch updates', d: 'update_memory merges fields without replacing the entire object. Only changed keys are re-uploaded.' },
-                  { t: 'Fallback values', d: 'retrieve_memory accepts a fallback object — clean agent code without null checks.' },
-                ].map(i => <div key={i.t} className="rounded-lg border border-border bg-background p-4"><h4 className="font-semibold text-foreground text-sm">{i.t}</h4><p className="mt-1 text-xs text-muted-foreground leading-5">{i.d}</p></div>)}
-              </div>
-              <CodeBlock
-                code={`// Store memory — persists between sessions
+      <DocBlock title="Example">
+        <div className="not-prose">
+          <CodeBlock
+            code={`// Store memory — persists between sessions
 await f.memory.store({
   agentId: "my-assistant",
   memoryKey: "preferences",
@@ -656,7 +825,7 @@ await f.memory.store({
   ttlDays: 30
 });
 
-// Retrieve next session
+// Retrieve next session — agent remembers context
 const mem = await f.memory.retrieve({
   agentId: "my-assistant",
   memoryKey: "preferences",
@@ -664,48 +833,167 @@ const mem = await f.memory.retrieve({
 });
 // → { found: true, data: { theme: "dark", lang: "es" }, version: 1 }
 
-// Update one field only
+// Update a single field without re-uploading everything
 await f.memory.update({
   agentId: "my-assistant",
   memoryKey: "preferences",
   patch: { theme: "system" }
 });
 // → { updatedFields: ["theme"], version: 2 }`}
-                language="TypeScript" filename="memory-example.ts" />
-            </motion.div>
-          )}
+            language="TypeScript" filename="memory-example.ts" />
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
 
-          {/* Security */}
-          {docTab === 'Security' && (
-            <motion.div key="security" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              <p className="text-muted-foreground mb-8 leading-7">AI agents are useful but shouldn't have unlimited spending. <span className="text-accent font-semibold">Paid operations are blocked by default.</span></p>
-              <div className="overflow-hidden rounded-xl border border-border">
-                <table className="w-full text-left text-sm">
-                  <thead><tr className="border-b border-border bg-card/50">{['Setting', 'Default', 'Why'].map(h => <th key={h} className="px-5 py-3 font-medium text-foreground">{h}</th>)}</tr></thead>
-                  <tbody className="divide-y divide-border">
-                    {[
-                      ['Network', 'Calibration', 'Testnet first. Mainnet requires explicit opt-in.'],
-                      ['Paid operations', 'Disabled', 'Agents must not spend FIL without approval.'],
-                      ['Confirmation', 'Required', 'Every paid call needs confirmPaidOperation: true.'],
-                      ['Max bytes/call', '10 MiB', 'Prevents runaway storage costs from a single agent action.'],
-                      ['Min data', '127 bytes', 'Filecoin protocol minimum enforced by Synapse SDK.'],
-                    ].map(([s, d, w]) => <tr key={s} className="bg-background"><td className="px-5 py-3 font-medium text-foreground">{s}</td><td className="px-5 py-3"><code className="rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">{d}</code></td><td className="px-5 py-3 text-muted-foreground">{w}</td></tr>)}
-                  </tbody>
-                </table>
-              </div>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {[
-                  'Never commit private keys. Use env vars or Grimoire for secret management.',
-                  'Start on Calibration testnet. Enable mainnet only in controlled deployments.',
-                  'Use estimate_cost before uploading. Let the agent decide if storage is affordable.',
-                  'Prefer outputPath for large retrievals. Avoid printing huge byte arrays in agent context.',
-                ].map(r => <div key={r} className="rounded-lg border border-border bg-background p-4 flex gap-3 items-start"><span className="text-accent shrink-0 mt-0.5 font-bold">—</span><p className="text-sm text-muted-foreground leading-6">{r}</p></div>)}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
+/* ── Integrations Tab ──────────────────────────────────────── */
+
+function IntegrationsDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="LangChain">
+        <p>Fetcher provides 17 native DynamicStructuredTools via createFetcherTools(). Works with any LangChain agent — ReAct, OpenAI Functions, or custom.</p>
+        <div className="not-prose mt-4">
+          <CodeBlock
+            code={`import { createFetcherTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
+import { ChatOpenAI } from "@langchain/openai";
+import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
+
+const backend = await createSynapseBackend({
+  privateKey: process.env.FILECOIN_PRIVATE_KEY
+});
+
+const tools = createFetcherTools({
+  backend,
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const executor = new AgentExecutor({
+  agent: await createOpenAIFunctionsAgent({
+    llm: new ChatOpenAI({ model: "gpt-4o" }), tools, prompt
+  }),
+  tools
+});
+
+await executor.invoke({
+  input: "Store the quarterly report on Filecoin and remember the CID."
+});`}
+            language="TypeScript" filename="langchain-example.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="LlamaIndex">
+        <p>Fetcher provides 17 native FunctionTools. Full JSON Schema support. Compatible with OpenAIAgent and any LlamaIndex agent.</p>
+        <div className="not-prose mt-4">
+          <CodeBlock
+            code={`import { createFetcherTools } from "@fetcher-fil/llamaindex";
+import { createSynapseBackend } from "@fetcher-fil/core";
+import { OpenAIAgent, OpenAI } from "llamaindex";
+
+const tools = createFetcherTools({
+  backend: await createSynapseBackend({
+    privateKey: process.env.FILECOIN_PRIVATE_KEY
+  }),
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+const agent = new OpenAIAgent({
+  llm: new OpenAI({ model: "gpt-4o" }), tools
+});
+
+await agent.chat({
+  message: "Store this report on Filecoin and verify it."
+});`}
+            language="TypeScript" filename="llamaindex-example.ts" />
+        </div>
+      </DocBlock>
+
+      <DocBlock title="SDK Direct">
+        <p>The Fetcher class provides a fluent programmatic API with chained methods and memory namespace. No agent framework required.</p>
+        <div className="not-prose mt-4">
+          <CodeBlock
+            code={`import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
+
+const f = new Fetcher({
+  backend: await createSynapseBackend({
+    privateKey: process.env.FILECOIN_PRIVATE_KEY
+  }),
+  spendingPolicy: { allowPaidOperations: true }
+});
+
+// Storage
+const { cid, url } = await f.store({
+  content: "Hello Filecoin", filename: "hello.txt"
+});
+
+// Agent Memory
+await f.memory.store({
+  agentId: "my-agent", memoryKey: "prefs",
+  data: { theme: "dark" }
+});
+const mem = await f.memory.retrieve({
+  agentId: "my-agent", memoryKey: "prefs"
+});
+
+// Observability
+const stats = await f.stats();
+const cost = await f.estimateCost({ sizeBytes: 1024 * 1024 });
+
+// Verification
+const proof = await f.verify({ cid });`}
+            language="TypeScript" filename="sdk-example.ts" />
+        </div>
+      </DocBlock>
+    </DocSection>
+  );
+}
+
+/* ── Security Tab ──────────────────────────────────────────── */
+
+function SecurityDoc() {
+  return (
+    <DocSection>
+      <DocBlock title="Safety by Default">
+        <p>AI agents are useful but should not have unlimited spending power. Fetcher ships with aggressive safety defaults that block all paid operations until explicitly enabled.</p>
+        <div className="not-prose overflow-x-auto mt-4">
+          <table className="w-full text-sm">
+            <thead><tr className="border-b border-border">{['Setting', 'Default', 'Override', 'Why'].map(h => <th key={h} className="px-4 py-2 text-left font-medium text-foreground">{h}</th>)}</tr></thead>
+            <tbody className="divide-y divide-border">
+              {[
+                ['Network', 'Calibration', 'FILECOIN_NETWORK=mainnet', 'Testnet first. Mainnet requires explicit opt-in.'],
+                ['Paid operations', 'Blocked', 'allowPaidOperations: true', 'Agents must not spend FIL without developer approval.'],
+                ['Confirmation', 'Required', 'confirmPaidOperation: true', 'Every paid call needs explicit confirmation from the agent.'],
+                ['Max per call', '10 MiB', 'maxStorageBytesPerCall', 'Prevents runaway storage costs from a single agent action.'],
+                ['Min data', '127 bytes', '—', 'Filecoin protocol minimum enforced by Synapse SDK.'],
+              ].map(([s, d, o, w]) => (
+                <tr key={s} className="bg-background"><td className="px-4 py-2.5 font-medium text-foreground">{s}</td><td className="px-4 py-2.5"><code className="rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent">{d}</code></td><td className="px-4 py-2.5 text-xs text-muted-foreground font-mono">{o}</td><td className="px-4 py-2.5 text-muted-foreground text-xs">{w}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DocBlock>
+
+      <DocBlock title="Best Practices">
+        <div className="grid gap-3 not-prose">
+          {[
+            'Never commit private keys to version control. Use environment variables or a secrets manager like Grimoire.',
+            'Always start on Calibration testnet. Enable mainnet only after thorough testing in controlled deployments.',
+            'Use estimate_cost before every upload. Let the agent decide if storage is affordable before committing funds.',
+            'Prefer the outputPath parameter for large retrievals. Avoid printing huge byte arrays in agent context windows.',
+            'Keep your @fetcher-fil packages updated. Security fixes and Synapse SDK compatibility updates are released regularly.',
+            'Use confirmPaidOperation: true only when the user or application policy has explicitly approved the storage spend.',
+          ].map(r => (
+            <div key={r} className="rounded-lg border border-border bg-background p-4 flex gap-3 items-start">
+              <span className="text-accent shrink-0 mt-0.5 font-bold">—</span>
+              <p className="text-sm text-muted-foreground leading-6">{r}</p>
+            </div>
+          ))}
+        </div>
+      </DocBlock>
+    </DocSection>
   );
 }
 
