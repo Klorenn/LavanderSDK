@@ -1,5 +1,5 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 import type {
   IndexBackend, IndexedFile, IndexedMemory,
@@ -16,6 +16,7 @@ export class FileIndexBackend implements IndexBackend {
   private data: IndexData = { version: 1, files: [], memories: [] };
   private readonly filePath: string;
   private loaded = false;
+  private writeQueue: Promise<void> = Promise.resolve();
 
   constructor(indexDir?: string) {
     const dir = indexDir ?? join(homedir(), ".fetcher");
@@ -36,9 +37,13 @@ export class FileIndexBackend implements IndexBackend {
     this.loaded = true;
   }
 
-  private async persist(): Promise<void> {
-    const dir = this.filePath.split("/").slice(0, -1).join("/");
-    await mkdir(dir, { recursive: true });
+  private persist(): Promise<void> {
+    this.writeQueue = this.writeQueue.then(() => this._writeToDisk());
+    return this.writeQueue;
+  }
+
+  private async _writeToDisk(): Promise<void> {
+    await mkdir(dirname(this.filePath), { recursive: true });
     await writeFile(this.filePath, JSON.stringify(this.data, null, 2), "utf-8");
   }
 

@@ -46,4 +46,33 @@ describe("FileIndexBackend", () => {
     const stats = await idx.getStats();
     expect(stats.totalFiles).toBe(1);
   });
+
+  it("lists memories for an agent, excluding other agents", async () => {
+    await idx.storeMemory({ ...MEMORY });
+    await idx.storeMemory({ agentId: "agent-1", memoryKey: "prefs2", cid: "bafk3", data: { x: 1 }, timestamp: "2026-01-02T00:00:00.000Z", version: 0 });
+    await idx.storeMemory({ agentId: "agent-2", memoryKey: "prefs", cid: "bafk4", data: {}, timestamp: "2026-01-01T00:00:00.000Z", version: 0 });
+    const page = await idx.listMemories("agent-1");
+    expect(page.total).toBe(2);
+    expect(page.memories.map(m => m.memoryKey).sort()).toEqual(["prefs", "prefs2"]);
+  });
+
+  it("deletes memory and subsequent retrieve returns null", async () => {
+    await idx.storeMemory({ ...MEMORY });
+    expect(await idx.deleteMemory("agent-1", "prefs")).toBe(true);
+    expect(await idx.retrieveMemory("agent-1", "prefs")).toBeNull();
+  });
+
+  it("deleteMemory returns false for missing key", async () => {
+    expect(await idx.deleteMemory("agent-1", "nonexistent")).toBe(false);
+  });
+
+  it("serializes concurrent writes without data loss", async () => {
+    const writes = Array.from({ length: 5 }, (_, i) =>
+      idx.addFile({ cid: `bafk${i}`, filename: `f${i}.txt`, size: 100, tags: [], timestamp: new Date().toISOString() })
+    );
+    await Promise.all(writes);
+    const idx2 = new FileIndexBackend(dir);
+    const page = await idx2.listFiles({ limit: 10 });
+    expect(page.total).toBe(5);
+  });
 });

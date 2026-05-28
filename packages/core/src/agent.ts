@@ -4,8 +4,8 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, DEFAULT_MIME_TYPE } from "./defaults.js";
 import { FetcherError } from "./errors.js";
-import { FetcherIndex } from "./indexStore.js";
-import type { IndexedFile, IndexedMemory } from "./indexStore.js";
+import { FileIndexBackend } from "./backends/fileIndexBackend.js";
+import type { IndexedMemory } from "./indexBackend.js";
 import {
   prepareStorageInputSchema,
   retrieveInputSchema,
@@ -38,8 +38,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
 
   const backend = config.backend;
   const policy: SpendingPolicy = { ...DEFAULT_SPENDING_POLICY, ...config.spendingPolicy };
-  const indexDir = config.indexDir ?? join(homedir(), ".fetcher");
-  const index = new FetcherIndex(indexDir);
+  const index = new FileIndexBackend(config.indexDir);
 
   return {
     async storeFile(input) {
