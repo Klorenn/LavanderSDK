@@ -206,30 +206,31 @@ function CodeBlock({ code, language, filename }: { code: string; language: strin
 
 /* ── Terminal component ──────────────────────────────────── */
 
-const asciiLines = [
-  '            /|、',
-  '           (˚ˎ 。7',
-  '            |、˜〵',
-  '           じしˍ,)ノ',
-];
-
 const terminalLines = [
   { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/80', delay: 0.3 },
-  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.5 },
-  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 0.7 },
-  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 0.9 },
-  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.4 },
-  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 1.8 },
-  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.0 },
+  { text: '', color: '', delay: 0.1 },
+  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.4 },
+  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 0.3 },
+  { text: '+ zod@4.4.3', color: 'text-[#7bd4a8]', delay: 0.3 },
+  { text: '', color: '', delay: 0.2 },
+  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 0.5 },
+  { text: '', color: '', delay: 0.3 },
+  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-semibold', delay: 0.6 },
+  { text: '', color: '', delay: 0.2 },
+  { text: 'Fetcher v0.1.0', color: 'text-foreground/90', delay: 0.4 },
+  { text: '17 tools loaded across 5 groups', color: 'text-muted-foreground', delay: 0.3 },
+  { text: 'MCP server listening on stdio', color: 'text-muted-foreground', delay: 0.4 },
+  { text: '', color: '', delay: 0.2 },
+  { text: 'Storage    · store_file, retrieve_file, list_files, delete_file', color: 'text-[#5b8dff]/70', delay: 0.3 },
+  { text: 'Verify     · verify_cid, check_deal, get_proof', color: 'text-accent/70', delay: 0.3 },
+  { text: 'Observe    · get_balance, estimate_cost, get_storage_stats, list_deals', color: 'text-[#7bd4a8]/70', delay: 0.3 },
+  { text: 'Memory     · store_memory, retrieve_memory, update_memory, list_memories, delete_memory', color: 'text-[#ffd166]/70', delay: 0.3 },
+  { text: 'Payments   · prepare_storage', color: 'text-[#ff6b8b]/70', delay: 0.3 },
 ];
-
-const DAEMON_START_LINE = 4;
-const DAEMON_END_LINE = 6;
 
 function Terminal() {
   const [visibleLines, setVisibleLines] = useState(0);
   const [started, setStarted] = useState(false);
-  const [daemonProgress, setDaemonProgress] = useState(0);
 
   useEffect(() => {
     const timer = setTimeout(() => setStarted(true), 500);
@@ -244,53 +245,35 @@ function Terminal() {
     return () => clearTimeout(timer);
   }, [started, visibleLines]);
 
-  useEffect(() => {
-    if (visibleLines >= DAEMON_START_LINE && daemonProgress < asciiLines.length) {
-      const timer = setTimeout(() => setDaemonProgress(p => p + 1), 180);
-      return () => clearTimeout(timer);
-    }
-  }, [visibleLines, daemonProgress]);
-
-  const daemonOpacity = Math.min(1, (visibleLines - DAEMON_START_LINE) / (DAEMON_END_LINE - DAEMON_START_LINE));
+  const allDone = visibleLines >= terminalLines.length;
 
   return (
     <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex flex-col">
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 shrink-0">
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 shrink-0 bg-[#0a0814]">
         <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
-        <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher ~ terminal</span>
+        <span className="ml-3 text-[10px] text-muted-foreground font-mono tracking-wider">fetcher — zsh</span>
       </div>
-      <div className="flex-1 flex flex-col-reverse md:flex-row items-center justify-center gap-3 md:gap-8 p-4 md:p-6">
-        <div className="flex-1 space-y-1 font-mono min-w-0">
-          {terminalLines.slice(0, visibleLines).map((line, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`text-[11px] md:text-sm ${line.color} leading-relaxed`}
-            >
-              {line.text}
-              {i === visibleLines - 1 && i >= 3 && (
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
-                  className="inline-block w-2 h-4 bg-accent ml-0.5 align-middle rounded-sm"
-                />
-              )}
-            </motion.div>
-          ))}
-        </div>
-        <div className="shrink-0 flex items-center" style={{ opacity: daemonOpacity, transition: 'opacity 0.5s ease-out' }}>
-          <pre className="font-mono text-accent/80 whitespace-pre leading-[1.05] text-[28px] md:text-[44px] select-none">
-            {asciiLines.map((line, i) => (
-              <div key={i}>
-                {i < daemonProgress ? line : ' '.repeat(line.length)}
-              </div>
-            ))}
-          </pre>
-        </div>
+      <div className="flex-1 p-4 md:p-6 space-y-0.5 font-mono overflow-hidden">
+        {terminalLines.slice(0, visibleLines).map((line, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25 }}
+            className={`text-[11px] md:text-[13px] ${line.color} leading-relaxed`}
+          >
+            {line.text || '\u00A0'}
+            {i === visibleLines - 1 && !allDone && i >= 1 && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatType: 'reverse' }}
+                className="inline-block w-2 h-[14px] bg-accent ml-0.5 align-middle rounded-sm"
+              />
+            )}
+          </motion.div>
+        ))}
       </div>
     </div>
   );
