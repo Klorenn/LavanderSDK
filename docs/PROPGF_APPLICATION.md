@@ -65,7 +65,17 @@ Fetcher is a TypeScript SDK that gives AI agents — Claude, GPT-4o, Gemini — 
 
 ### Completion Criteria
 
-Fetcher v1.0.0 published to npm with all 17 tools functional across 4 adapters (MCP, LangChain, LlamaIndex, SDK). Full documentation site live at lavander-sdk.vercel.app. At least 5 verified paid storage deals completed on Calibration testnet via the SDK. All 75 tests passing. Community announcement posted in Filecoin Slack.
+1. **npm publication** — `@fetcher-fil/core`, `@fetcher-fil/mcp`, `@fetcher-fil/langchain`, `@fetcher-fil/llamaindex`, `@fetcher-fil/sdk`, and `@fetcher-fil/testkit` published to the public npm registry at v1.0.0.
+
+2. **All 17 tools functional** — store_file, retrieve_file, list_files, delete_file, verify_cid, check_deal, get_proof, get_balance, estimate_cost, get_storage_stats, list_deals, store_memory, retrieve_memory, update_memory, list_memories, delete_memory, prepare_storage — working identically across MCP, LangChain, LlamaIndex, and SDK adapters.
+
+3. **Verified on Calibration testnet** — Minimum 5 paid storage deals completed and verified on-chain using the SDK against Filecoin Calibration testnet via Synapse SDK.
+
+4. **Full test suite passing** — All 75+ tests passing across 7 packages without requiring a wallet or network access (via @fetcher-fil/testkit's fake storage backend and memory index backend).
+
+5. **Documentation site live** — `https://lavander-sdk.vercel.app` deployed with complete documentation: project overview, step-by-step guide (wallet setup, faucet, first upload), MCP configuration, architecture reference, full API reference for all 17 tools, agent memory guide, LangChain/LlamaIndex/SDK integration guides, security defaults, and troubleshooting.
+
+6. **Community announcement** — Post in Filecoin Slack (#fil-dev) and Filecoin Forum announcing the v1.0.0 release with demo video and quickstart instructions.
 
 ### 2.4 Milestones & Budget
 
