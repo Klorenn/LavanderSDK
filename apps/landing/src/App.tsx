@@ -334,12 +334,7 @@ function Hero() {
           <button onClick={() => navigate('#docs')} className="rounded-full border border-border px-8 py-3.5 text-base font-medium text-foreground hover:border-accent/50 transition">Read Docs</button>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 text-center text-sm text-muted-foreground">
-          <span>Open source · </span>
-          <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="text-accent/80 hover:text-accent transition">github.com/Klorenn/LavanderSDK</a>
-          <span className="mx-2 text-border">|</span>
-          <span>2026</span>
-        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12" />
       </motion.div>
 
       <motion.div style={{ y: dashboardY }} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="relative z-20 mx-auto mt-10 min-h-[460px] md:min-h-[520px] w-[90%] max-w-4xl rounded-2xl md:mt-14">
