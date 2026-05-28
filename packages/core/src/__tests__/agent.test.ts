@@ -59,4 +59,18 @@ describe("createFetcherAgent — store/retrieve/verify", () => {
     expect(page.total).toBe(1);
     expect(page.files[0].filename).toBe("injected.txt");
   });
+
+  it("stores binary data and returns a CID", async () => {
+    const agent = createFetcherAgent({
+      backend: createFakeStorageBackend(),
+      indexBackend: new MemoryIndexBackend(),
+      spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
+    });
+
+    const binaryData = new Uint8Array(200).fill(0xff);
+    const result = await agent.storeFile({ data: binaryData, filename: "photo.png" });
+
+    expect(result.cid).toBe(TEST_CID);
+    expect(result.filename).toBe("photo.png");
+  });
 });

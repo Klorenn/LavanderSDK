@@ -35,4 +35,18 @@ describe("core schemas", () => {
     expect(retrieveMemoryInputSchema.parse({ agentId: "my-agent", memoryKey: "prefs" }).memoryKey).toBe("prefs");
     expect(updateMemoryInputSchema.parse({ agentId: "my-agent", memoryKey: "prefs", patch: { lang: "en" } }).patch.lang).toBe("en");
   });
+
+  it("accepts binary data input", () => {
+    const parsed = storeFileInputSchema.parse({ data: new Uint8Array([1, 2, 3]), filename: "image.png" });
+    expect(parsed.filename).toBe("image.png");
+    expect(parsed.data).toBeInstanceOf(Uint8Array);
+  });
+
+  it("rejects when both content and data are provided", () => {
+    expect(() => storeFileInputSchema.parse({ content: "text", data: new Uint8Array([1]), filename: "f.txt" })).toThrow();
+  });
+
+  it("rejects when neither content nor data is provided", () => {
+    expect(() => storeFileInputSchema.parse({ filename: "f.txt" })).toThrow();
+  });
 });

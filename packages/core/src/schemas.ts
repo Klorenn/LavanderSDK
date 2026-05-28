@@ -8,13 +8,17 @@ const metadataSchema = z
   .optional();
 
 export const storeFileInputSchema = z.object({
-  content: z.string().min(1),
+  content: z.string().min(1).optional(),
+  data: z.instanceof(Uint8Array).optional(),
   filename: z.string().min(1),
   mimeType: z.string().optional(),
   tags: z.array(z.string().min(1).max(32)).max(10).optional(),
   copies: z.number().int().min(1).max(10).optional(),
-  confirmPaidOperation: z.boolean().optional()
-});
+  confirmPaidOperation: z.boolean().optional(),
+}).refine(
+  (v) => (v.content !== undefined) !== (v.data !== undefined),
+  { message: "Provide either content or data, not both and not neither." }
+);
 
 export const retrieveInputSchema = z.object({
   cid: cidSchema,

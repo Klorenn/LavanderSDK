@@ -17,7 +17,8 @@ export type FetcherConfig = {
 };
 
 export type StoreFileInput = {
-  content: string;
+  content?: string;
+  data?: Uint8Array;
   filename: string;
   mimeType?: string;
   tags?: string[];

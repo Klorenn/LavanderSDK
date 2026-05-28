@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, DEFAULT_MIME_TYPE } from "./defaults.js";
+import { DEFAULT_SPENDING_POLICY, FILECOIN_MIN_BYTES, getMimeType } from "./defaults.js";
 import { FetcherError } from "./errors.js";
 import { FileIndexBackend } from "./backends/fileIndexBackend.js";
 import type { IndexedMemory, IndexBackend } from "./indexBackend.js";
@@ -43,17 +43,25 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
   return {
     async storeFile(input) {
       const parsed = storeFileInputSchema.parse(input);
-      const data = new TextEncoder().encode(parsed.content);
 
-      if (data.byteLength < FILECOIN_MIN_BYTES) {
+      let bytes: Uint8Array;
+      if (parsed.content !== undefined) {
+        bytes = new TextEncoder().encode(parsed.content);
+      } else {
+        bytes = parsed.data!;
+      }
+
+      const mimeType = parsed.mimeType ?? getMimeType(parsed.filename);
+
+      if (bytes.byteLength < FILECOIN_MIN_BYTES) {
         throw new FetcherError(
           "SIZE_TOO_SMALL",
-          `Content size ${data.byteLength} bytes is below Filecoin minimum of ${FILECOIN_MIN_BYTES} bytes.`
+          `Content size ${bytes.byteLength} bytes is below Filecoin minimum of ${FILECOIN_MIN_BYTES} bytes.`
         );
       }
 
-      assertPaidOperationAllowed(policy, data.byteLength, parsed.confirmPaidOperation);
-      const result = await backend.upload(data, { metadata: {}, copies: parsed.copies });
+      assertPaidOperationAllowed(policy, bytes.byteLength, parsed.confirmPaidOperation);
+      const result = await backend.upload(bytes, { metadata: {}, copies: parsed.copies });
       const timestamp = new Date().toISOString();
 
       await index.addFile({
@@ -82,7 +90,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const parsed = retrieveInputSchema.parse(input);
       const bytes = await backend.download({ cid: parsed.cid, withCDN: parsed.withCDN });
 
-      const mimeType = DEFAULT_MIME_TYPE;
+      const mimeType = "application/octet-stream";
 
       if (parsed.outputPath) {
         await mkdir(dirname(parsed.outputPath), { recursive: true });
