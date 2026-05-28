@@ -14,8 +14,9 @@
 
 This is intentionally split into reviewable work units. Each task should be implemented, tested, and committed before moving on.
 
-| Slice | Tasks | Review outcome |
-|---|---:|---|
+| Slice | Tasks | Review outcome |                ++++++++++++++++¨~                                                                                  
+}|
++++++++++++++---|---:|---|
 | Monorepo foundation | 1 | Existing landing survives under `apps/landing`. |
 | Core SDK | 2-4 | Fake-backed core API works without Filecoin credentials. |
 | MCP | 5 | MCP stdio server exposes the six MVP tools. |
