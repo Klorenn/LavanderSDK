@@ -1,8 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { Button } from './components/ui/button';
 
 const navLinks = ['Docs', 'Tools', 'Integrations', 'Grimoire'];
+
+function useHash() {
+  return useSyncExternalStore(
+    () => {
+      const handler = () => {};
+      window.addEventListener('hashchange', handler);
+      return () => window.removeEventListener('hashchange', handler);
+    },
+    () => window.location.hash
+  );
+}
+
+function navigate(hash: string) {
+  window.location.hash = hash;
+}
 
 const tools = [
   { name: 'store_file', desc: 'Upload any file. Get a permanent, verified CID on Filecoin.', group: 'Storage' },
@@ -120,9 +135,13 @@ function Hero() {
           </a>
           <div className="hidden items-center gap-7 text-sm font-medium text-foreground/72 md:flex">
             {navLinks.map((link) => (
-              <a key={link} href={`#${link.toLowerCase()}`} className="transition hover:text-foreground">
+              <button
+                key={link}
+                onClick={() => navigate(link === 'Docs' ? '#docs' : `#${link.toLowerCase()}`)}
+                className="bg-transparent border-0 cursor-pointer transition hover:text-foreground"
+              >
                 {link}
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -348,60 +367,21 @@ function highlightCode(code: string): string {
 
 function CodeDemo() {
   const [activeTab, setActiveTab] = useState<TabId>('mcp');
-  const [displayedCode, setDisplayedCode] = useState('');
-  const [charIndex, setCharIndex] = useState(0);
-  const [typing, setTyping] = useState(true);
-  const intervalRef = useRef<number>(0);
-  const autoCycleRef = useRef<number>(0);
+  const [visible, setVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-
-  const snippet = codeSnippets[activeTab];
-
-  useEffect(() => {
-    setDisplayedCode('');
-    setCharIndex(0);
-    setTyping(true);
-
-    intervalRef.current = window.setInterval(() => {
-      setCharIndex((prev) => {
-        if (prev >= snippet.length) {
-          setTyping(false);
-          window.clearInterval(intervalRef.current);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 8);
-
-    return () => window.clearInterval(intervalRef.current);
-  }, [activeTab]);
-
-  useEffect(() => {
-    setDisplayedCode(snippet.slice(0, charIndex));
-  }, [charIndex, snippet]);
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting && autoCycleRef.current) {
-          window.clearInterval(autoCycleRef.current);
-        }
-      },
-      { threshold: 0.3 }
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.2 }
     );
-
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
 
-  const switchTab = (id: TabId) => {
-    window.clearInterval(intervalRef.current);
-    window.clearInterval(autoCycleRef.current);
-    setActiveTab(id);
-  };
+  const snippet = codeSnippets[activeTab];
 
   return (
     <section ref={sectionRef} id="quickstart" className="px-8 py-24 md:px-28 md:py-32">
@@ -423,24 +403,23 @@ function CodeDemo() {
 
         <motion.div
           initial={{ opacity: 0, y: 36 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 36 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-12 rounded-2xl border border-border/60 bg-[#05040b] shadow-[0_30px_90px_rgba(7,6,16,0.7)] overflow-hidden"
         >
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border/40">
+          <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border/40 bg-[#0a0814]">
             <span className="h-3 w-3 rounded-full bg-[#ff6b8b]" />
             <span className="h-3 w-3 rounded-full bg-[#ffd166]" />
             <span className="h-3 w-3 rounded-full bg-[#7bd4a8]" />
-            <div className="ml-6 flex gap-1">
+            <div className="ml-6 flex gap-0.5">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => switchTab(tab.id)}
+                  onClick={() => setActiveTab(tab.id)}
                   className={`relative px-4 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
                     activeTab === tab.id
                       ? `${tab.textColor} bg-white/5`
-                      : 'text-muted-foreground hover:text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
                   }`}
                 >
                   {tab.label}
@@ -456,36 +435,35 @@ function CodeDemo() {
             </div>
           </div>
 
-          <div className="p-5 md:p-8 font-mono text-xs md:text-sm leading-relaxed">
-            <pre className="whitespace-pre-wrap text-foreground/85">
-              <code dangerouslySetInnerHTML={{ __html: highlightCode(displayedCode) }} />
-              {typing && (
-                <motion.span
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
-                  className="inline-block w-2 h-4 bg-accent ml-0.5 align-middle rounded-sm"
-                />
-              )}
-            </pre>
+          <div className="relative">
+            <div className="p-5 md:p-8 font-mono text-xs md:text-sm leading-relaxed min-h-[200px]">
+              <pre className="whitespace-pre-wrap text-foreground/85">
+                <code dangerouslySetInnerHTML={{ __html: highlightCode(snippet) }} />
+              </pre>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                navigator.clipboard.writeText(snippet);
+              }}
+              className="absolute top-3 right-3 rounded-md bg-white/5 px-2.5 py-1.5 text-[11px] text-foreground/50 hover:text-foreground hover:bg-white/10 transition"
+              title="Copy to clipboard"
+            >
+              copy
+            </motion.button>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border/40 text-[11px] text-muted-foreground">
-            <span>{activeTab === 'mcp' ? '~/.config/claude/claude_desktop_config.json' : activeTab === 'langchain' ? 'src/agent.ts' : activeTab === 'llamaindex' ? 'src/agent.ts' : 'src/index.ts'}</span>
-            <span className="flex items-center gap-3">
-              <span className="text-[#7bd4a8]">{displayedCode.length} / {snippet.length} chars</span>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  window.clearInterval(intervalRef.current);
-                  setDisplayedCode(snippet);
-                  setCharIndex(snippet.length);
-                  setTyping(false);
-                }}
-                className="rounded bg-white/5 px-2 py-1 text-foreground/60 hover:text-foreground transition"
-              >
-                skip typing
-              </motion.button>
+          <div className="flex items-center justify-between px-5 py-3 border-t border-border/40 bg-[#0a0814] text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#7bd4a8] animate-pulse" />
+              {activeTab === 'mcp' ? '~/.config/claude/claude_desktop_config.json' :
+               activeTab === 'langchain' ? 'src/agent.ts' :
+               activeTab === 'llamaindex' ? 'src/agent.ts' : 'src/index.ts'}
+            </span>
+            <span className="flex items-center gap-4">
+              <span className="text-[#7bd4a8]">{snippet.split('\n').length} lines</span>
+              <span>{activeTab === 'mcp' ? 'JSON config' : 'TypeScript'}</span>
             </span>
           </div>
         </motion.div>
@@ -951,11 +929,10 @@ function Footer() {
           <p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">The spirit that fetches data from Filecoin</p>
         </div>
         <div className="flex flex-wrap gap-5 text-sm text-muted-foreground md:justify-center">
-          {['Docs', 'GitHub', 'Grimoire', 'Filecoin'].map((link) => (
-            <a key={link} href="#docs" className="transition hover:text-foreground">
-              {link}
-            </a>
-          ))}
+          <button onClick={() => navigate('#docs')} className="transition hover:text-foreground bg-transparent border-0 cursor-pointer">Docs</button>
+          <a href="https://github.com/Klorenn/" target="_blank" rel="noopener noreferrer" className="transition hover:text-foreground">GitHub</a>
+          <a href="https://x.com/kl0ren" target="_blank" rel="noopener noreferrer" className="transition hover:text-foreground">X / Twitter</a>
+          <a href="https://filecoin.io" target="_blank" rel="noopener noreferrer" className="transition hover:text-foreground">Filecoin</a>
         </div>
         <div className="md:text-right">
           <span className="rounded-full border border-accent/25 bg-accent-soft px-3 py-1.5 text-xs font-semibold text-accent">
@@ -968,10 +945,9 @@ function Footer() {
   );
 }
 
-export default function App() {
+function LandingPage() {
   return (
-    <main id="hero" className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <CustomCursor />
+    <>
       <Hero />
       <Ticker />
       <CodeDemo />
@@ -979,8 +955,39 @@ export default function App() {
       <IntegrationsSection />
       <TestimonialSection />
       <EcosystemSection />
-      <DocsSection />
       <Footer />
+    </>
+  );
+}
+
+export default function App() {
+  const hash = useHash();
+
+  if (hash === '#docs') {
+    return (
+      <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
+        <CustomCursor />
+        <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl px-8 py-4 md:px-28 flex items-center justify-between">
+          <button onClick={() => navigate('#')} className="flex items-center gap-3 bg-transparent border-0 cursor-pointer">
+            <SpiritLogo />
+            <span className="text-xl font-bold tracking-tight">Fetcher</span>
+          </button>
+          <button
+            onClick={() => navigate('#')}
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-accent-soft transition"
+          >
+            ← Back to home
+          </button>
+        </nav>
+        <DocsSection />
+      </main>
+    );
+  }
+
+  return (
+    <main id="hero" className="min-h-screen overflow-x-hidden bg-background text-foreground">
+      <CustomCursor />
+      <LandingPage />
     </main>
   );
 }
