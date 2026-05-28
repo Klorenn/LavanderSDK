@@ -311,11 +311,12 @@ function Hero() {
       </nav>
 
       <motion.div style={{ y: textY, opacity: textOpacity }} className="relative z-30 mx-auto mt-16 flex max-w-4xl flex-col items-center px-4 text-center md:mt-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="liquid-glass mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/90">
-          <span className="rounded-md bg-accent/80 px-2 py-1 text-xs font-bold text-background">MCP</span>
-          <span className="rounded-md bg-[#5b8dff]/20 px-2 py-1 text-xs font-bold text-[#9db8ff]">LangChain</span>
-          <span className="rounded-md bg-accent/20 px-2 py-1 text-xs font-bold text-accent">LlamaIndex</span>
-          <span>Connect AI agents to Filecoin</span>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6 flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/5 px-1.5 py-1 text-sm backdrop-blur">
+          <span className="rounded-full bg-accent/80 px-3 py-1 text-xs font-semibold text-white">MCP</span>
+          <span className="rounded-full bg-[#5b8dff]/15 px-3 py-1 text-xs font-semibold text-[#9db8ff]">LangChain</span>
+          <span className="rounded-full bg-[#a87dd4]/15 px-3 py-1 text-xs font-semibold text-[#c9a8f0]">LlamaIndex</span>
+          <span className="rounded-full bg-[#7bd4a8]/10 px-3 py-1 text-xs font-semibold text-[#7bd4a8]">SDK</span>
+          <span className="ml-2 text-xs text-muted-foreground pr-2">Connect AI agents to Filecoin</span>
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }} className="mb-4 text-5xl font-medium leading-tight tracking-[-2px] text-foreground md:text-7xl">
