@@ -1,33 +1,29 @@
 {
   "name": "@fetcher-fil/llamaindex",
   "version": "0.1.0",
+  "description": "Fetcher Tools for LlamaIndex — 17 FunctionTools for Filecoin Onchain Cloud",
+  "license": "MIT",
+  "keywords": ["filecoin", "llamaindex", "ai-agents", "storage", "tools"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "files": ["dist"],
   "publishConfig": { "access": "public" },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@fetcher-fil/core": "0.1.0",
-    "zod": "latest"
+    "@fetcher-fil/core": "*",
+    "zod": "^4.4"
   },
   "peerDependencies": {
-    "llamaindex": ">=0.10.0 <1"
+    "llamaindex": ">=0.12 <1"
   },
   "devDependencies": {
     "@fetcher-fil/testkit": "*",
-    "llamaindex": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "llamaindex": "^0.12",
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

@@ -1,28 +1,24 @@
 {
   "name": "@fetcher-fil/sdk",
   "version": "0.1.0",
+  "description": "Fetcher SDK — programmatic API for Filecoin Onchain Cloud with fluent Fetcher class",
+  "license": "MIT",
+  "keywords": ["filecoin", "sdk", "ai-agents", "storage", "programmatic"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "files": ["dist"],
   "publishConfig": { "access": "public" },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@fetcher-fil/core": "0.1.0"
+    "@fetcher-fil/core": "*"
   },
   "devDependencies": {
     "@fetcher-fil/testkit": "*",
-    "typescript": "latest",
-    "vitest": "latest"
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

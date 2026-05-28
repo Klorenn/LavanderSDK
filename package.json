@@ -14,8 +14,8 @@
     "validate": "npx tsx scripts/e2e-validate.ts"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@types/node": "^22",
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

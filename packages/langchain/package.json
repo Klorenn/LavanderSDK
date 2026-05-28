@@ -1,33 +1,29 @@
 {
   "name": "@fetcher-fil/langchain",
   "version": "0.1.0",
+  "description": "Fetcher Toolkit for LangChain — 17 DynamicStructuredTools for Filecoin Onchain Cloud",
+  "license": "MIT",
+  "keywords": ["filecoin", "langchain", "ai-agents", "storage", "tools"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "files": ["dist"],
   "publishConfig": { "access": "public" },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@fetcher-fil/core": "0.1.0",
-    "zod": "latest"
+    "@fetcher-fil/core": "*",
+    "zod": "^4.4"
   },
   "peerDependencies": {
-    "@langchain/core": ">=0.3.0 <2"
+    "@langchain/core": ">=1.1 <2"
   },
   "devDependencies": {
     "@fetcher-fil/testkit": "*",
-    "@langchain/core": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@langchain/core": "^1.1",
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

@@ -7,27 +7,20 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "files": ["dist"],
   "publishConfig": { "access": "public" },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@filoz/synapse-sdk": "latest",
-    "viem": "latest",
-    "zod": "latest"
+    "@filoz/synapse-sdk": "^0.41",
+    "viem": "^2.51",
+    "zod": "^4.4"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@types/node": "^22",
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

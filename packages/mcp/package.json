@@ -1,33 +1,27 @@
 {
   "name": "@fetcher-fil/mcp",
   "version": "0.1.0",
+  "description": "MCP stdio server exposing 17 Filecoin storage tools for Claude Desktop and MCP clients",
+  "license": "MIT",
+  "keywords": ["filecoin", "mcp", "synapse", "claude", "ai-agents", "storage"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "README.md"],
+  "bin": { "fetcher-fil-mcp": "dist/cli.js" },
+  "files": ["dist"],
   "publishConfig": { "access": "public" },
-  "bin": {
-    "fetcher-fil-mcp": "dist/cli.js"
-  },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@fetcher-fil/core": "0.1.0",
-    "@modelcontextprotocol/server": "latest",
-    "zod": "latest"
+    "@modelcontextprotocol/server": "2.0.0-alpha.2",
+    "@fetcher-fil/core": "*",
+    "zod": "^4.4"
   },
   "devDependencies": {
-    "@fetcher-fil/testkit": "0.1.0",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@fetcher-fil/testkit": "*",
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }

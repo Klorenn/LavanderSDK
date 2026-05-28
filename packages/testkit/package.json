@@ -1,26 +1,23 @@
 {
   "name": "@fetcher-fil/testkit",
   "version": "0.1.0",
-  "private": true,
+  "description": "Fake Filecoin storage backend and MemoryIndexBackend for testing Fetcher SDK without a wallet",
+  "license": "MIT",
+  "keywords": ["filecoin", "testing", "mock", "storage"],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "publishConfig": { "access": "public" },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
+  "scripts": { "build": "tsc -p tsconfig.json", "test": "vitest run", "test:watch": "vitest" },
   "dependencies": {
-    "@fetcher-fil/core": "0.1.0"
+    "@fetcher-fil/core": "*"
   },
   "devDependencies": {
-    "typescript": "latest",
-    "vitest": "latest"
+    "typescript": "^5.7",
+    "vitest": "^4.1"
   }
 }
