@@ -79,43 +79,36 @@ Fetcher is a TypeScript SDK that gives AI agents — Claude, GPT-4o, Gemini — 
 
 ### 2.4 Milestones & Budget
 
-**Milestone 1 — Core Storage + MCP Server · $500 · Weeks 1-2**
+**Milestone 1 — Core SDK + MCP Server + Agent Memory · $1,000 · Weeks 1-4**
 
-Deliverable: MCP stdio server functional with 6 storage and verification tools running over Synapse SDK on Filecoin Calibration testnet. Published to npm as `@fetcher-fil/core` and `@fetcher-fil/mcp`. Unit tests passing with fake storage backend (no wallet required). README with minimum setup instructions.
+Title: Core SDK, MCP Server, and Agent Memory System
 
-- store_file, retrieve_file, list_files, delete_file, verify_cid, check_deal
-- Synapse backend wrapper with PDP verification
-- Spending policy enforcement (paid ops blocked by default)
-- FakeStorageBackend in testkit for zero-wallet testing
+Deliverable: The full Fetcher SDK core published to npm with 11 tools across 2 adapters. MCP stdio server exposing storage, verification, and memory tools. Agent memory system with versioned, TTL-aware persistence between sessions. Unit tests passing with fake backends (no wallet required).
 
-**Milestone 2 — Agent Memory System · $500 · Weeks 3-4**
+Completion criteria:
+- `@fetcher-fil/core` and `@fetcher-fil/mcp` published to npm at v0.1.0
+- 11 tools functional via MCP: store_file, retrieve_file, list_files, delete_file, verify_cid, check_deal, get_proof, store_memory, retrieve_memory, update_memory, list_memories
+- Agent memory system with version tracking, TTL expiration, and fallback values
+- Spending policy enforced: paid operations blocked by default, confirmation required
+- All tests passing with FakeStorageBackend and MemoryIndexBackend
+- Demo video: agent storing data and remembering context between sessions
 
-Deliverable: Five memory tools enabling AI agents to persist structured context between sessions on Filecoin. Memory entries are versioned, TTL-aware, and indexed locally by agent_id and memory_key. Demo video showing an agent storing preferences in one session and retrieving them in another.
+**Milestone 2 — LangChain + LlamaIndex + Observability + Launch · $1,000 · Weeks 5-8**
 
-- store_memory, retrieve_memory, update_memory, list_memories, delete_memory
-- Local index via FileIndexBackend (JSON on disk)
-- MemoryIndexBackend for in-memory unit tests
-- Demo: Claude Desktop agent remembering user preferences across conversations
+Title: Multi-Framework Support, Observability Tools, and Public Launch
 
-**Milestone 3 — Observability + LangChain + LlamaIndex · $500 · Weeks 5-7**
+Deliverable: Fetcher available on all 4 frameworks (MCP, LangChain, LlamaIndex, SDK). Observability tools for cost estimation, balance checking, and storage stats. Full documentation site deployed. v1.0.0 published to npm. Community announcement.
 
-Deliverable: Four observability tools. Native LangChain toolkit (17 DynamicStructuredTools). Native LlamaIndex tools (17 FunctionTools). Fetcher class with fluent SDK API. Examples for all three frameworks.
-
-- get_balance, estimate_cost, get_storage_stats, list_deals
-- FetcherToolkit for LangChain (extends BaseToolkit pattern)
-- FetcherTools for LlamaIndex (FunctionTool pattern)
-- Fetcher class: f.store(), f.memory.store(), f.stats(), f.deals()
-- Working examples: langchain-agent, llamaindex-agent
-
-**Milestone 4 — Documentation + Public Launch · $500 · Week 8**
-
-Deliverable: Full documentation site deployed. Integration guides for MCP, LangChain, LlamaIndex, and SDK. Step-by-step tutorial covering wallet setup, Calibration faucet, first upload, and mainnet migration. v1.0.0 published to npm. Community announcement in Filecoin Slack and Forum. Final ProPGF report with on-chain evidence links.
-
-- Documentation site at lavander-sdk.vercel.app with 9 sections
-- Guides: Quickstart, MCP Setup, LangChain, LlamaIndex, SDK, Memory, Security
-- npm publish of all 6 packages at v1.0.0
-- Community announcement + demo video
-- Final grant report with verification metrics
+Completion criteria:
+- `@fetcher-fil/langchain`, `@fetcher-fil/llamaindex`, and `@fetcher-fil/sdk` published to npm at v1.0.0
+- All 17 tools available identically across all 4 adapters
+- 4 observability tools: get_balance, estimate_cost, get_storage_stats, list_deals
+- Fetcher SDK class with fluent API and memory namespace
+- Documentation site live at lavander-sdk.vercel.app with 9 sections
+- Minimum 5 verified paid storage deals completed on Calibration testnet
+- All 75+ tests passing across 7 packages
+- Community announcement posted in Filecoin Slack (#fil-dev) and Filecoin Forum
+- Final ProPGF report submitted with on-chain verification links
 
 ---
 
