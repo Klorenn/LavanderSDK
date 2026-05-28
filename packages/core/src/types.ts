@@ -77,9 +77,13 @@ export type UpdateMemoryInput = {
 
 export type StoreResult = {
   cid: string;
+  url: string;
   size: number;
+  timestamp: string;
   complete: boolean;
   filename: string;
+  dealStatus: "active" | "pending" | "failed";
+  provider: string;
   copies: Array<{ providerId?: number; status: string }>;
   failedAttempts: Array<{ providerId?: number; reason: string }>;
 };
@@ -114,9 +118,10 @@ export type PrepareStorageResult = {
 };
 
 export type BalanceResult = {
-  fil?: string;
-  usdfc?: string;
-  runwayDays?: number;
+  balanceUsdfc: string;
+  balanceFil: string;
+  pendingPayments: string;
+  availableUsdfc: string;
 };
 
 export type ListFilesResult = {
@@ -142,6 +147,7 @@ export type StoreMemoryResult = {
   agentId: string;
   timestamp: string;
   previousCid?: string;
+  version: number;
 };
 
 export type RetrieveMemoryResult = {
@@ -149,6 +155,7 @@ export type RetrieveMemoryResult = {
   cid?: string;
   timestamp?: string;
   ageDays?: number;
+  version?: number;
   found: boolean;
 };
 
@@ -242,6 +249,15 @@ export type ProofResult = {
   blockNumber?: number;
 };
 
+export type DealResult = {
+  dealActive: boolean;
+  providers: string[];
+  expiryDate: string;
+  redundancy: number;
+  lastProofTimestamp: string;
+  nextProofDue: string;
+};
+
 export type BackendUploadOptions = {
   metadata?: Record<string, string>;
   copies?: number;
@@ -273,4 +289,5 @@ export interface FetcherStorage {
   estimateCost(input: EstimateCostInput): Promise<EstimateCostResult>;
   listDeals(input?: ListDealsInput): Promise<ListDealsResult>;
   getProof(input: GetProofInput): Promise<ProofResult>;
+  checkDeal(input: VerifyInput): Promise<DealResult>;
 }

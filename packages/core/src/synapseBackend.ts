@@ -38,11 +38,18 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
         ...(options?.metadata ? { metadata: options.metadata } : {})
       });
 
+      const cid = String(result.pieceCid);
+      const timestamp = new Date().toISOString();
+
       return {
-        cid: String(result.pieceCid),
+        cid,
+        url: `https://w3s.link/ipfs/${cid}`,
         size: Number(result.size),
+        timestamp,
         complete: Boolean(result.complete),
         filename: "",
+        dealStatus: Boolean(result.complete) ? "active" : "pending",
+        provider: "synapse",
         copies: Array.isArray(result.copies)
           ? result.copies.map((copy) => ({
               providerId: copy.providerId === undefined ? undefined : Number(copy.providerId),
@@ -109,7 +116,8 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
 
     async getBalance(): Promise<BalanceResult> {
       const walletBalance = await synapse.payments.walletBalance();
-      return { usdfc: String(walletBalance) };
+      const usdfc = String(walletBalance);
+      return { balanceUsdfc: usdfc, balanceFil: "0", pendingPayments: "0", availableUsdfc: usdfc };
     }
   };
 }

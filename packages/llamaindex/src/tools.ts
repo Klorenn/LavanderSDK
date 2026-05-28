@@ -29,7 +29,7 @@ export function createFetcherTools(config: FetcherConfig) {
     tool({ name: "retrieve_file", description: "Retrieve data from Filecoin by CID.", parameters: retrieveInputSchema, execute: async (input: any) => { const r = await storage.retrieve(input); return stringify({ ...r, bytes: r.bytes ? `[${r.bytes.byteLength} bytes]` : undefined }); } }),
     tool({ name: "list_files", description: "List files uploaded by this API key.", parameters: listFilesInputSchema, execute: async (input: any) => stringify(await storage.listFiles(input)) }),
     tool({ name: "verify_cid", description: "Verify Filecoin storage state with PDP evidence.", parameters: verifyInputSchema, execute: async (input: any) => stringify(await storage.verify(input)) }),
-    tool({ name: "check_deal", description: "Check Filecoin deal status for a CID.", parameters: verifyInputSchema, execute: async (input: any) => stringify(await storage.verify(input)) }),
+    tool({ name: "check_deal", description: "Check Filecoin deal status for a CID.", parameters: verifyInputSchema, execute: async (input: any) => stringify(await storage.checkDeal(input)) }),
     tool({ name: "get_proof", description: "Retrieve cryptographic PDP proof for a CID.", parameters: getProofInputSchema, execute: async (input: any) => stringify(await storage.getProof(input)) }),
     tool({ name: "prepare_storage", description: "Prepare balance for storage uploads.", parameters: prepareStorageInputSchema, execute: async (input: any) => stringify(await storage.prepareStorage(input)) }),
     tool({ name: "delete_file", description: "Remove file from local index. Data stays on Filecoin.", parameters: deleteFileInputSchema, execute: async (input: any) => stringify(await storage.deleteFile(input)) }),

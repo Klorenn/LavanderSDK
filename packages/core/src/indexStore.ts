@@ -17,6 +17,7 @@ export type IndexedMemory = {
   data: Record<string, unknown>;
   timestamp: string;
   ttlDays?: number;
+  version: number;
 };
 
 type IndexData = {
@@ -101,19 +102,21 @@ export class FetcherIndex {
     return true;
   }
 
-  async storeMemory(memory: IndexedMemory): Promise<{ previousCid?: string }> {
+  async storeMemory(memory: IndexedMemory): Promise<{ previousCid?: string; version: number }> {
     await this.ensureLoaded();
     const idx = this.data.memories.findIndex(
       (m) => m.agentId === memory.agentId && m.memoryKey === memory.memoryKey
     );
     const previousCid = idx >= 0 ? this.data.memories[idx].cid : undefined;
+    const version = idx >= 0 ? (this.data.memories[idx].version + 1) : 1;
+    memory.version = version;
     if (idx >= 0) {
       this.data.memories[idx] = memory;
     } else {
       this.data.memories.push(memory);
     }
     await this.persist();
-    return { previousCid };
+    return { previousCid, version };
   }
 
   async retrieveMemory(agentId: string, memoryKey: string): Promise<IndexedMemory | null> {

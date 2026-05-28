@@ -10,6 +10,7 @@ export class Fetcher {
   store = (input: Parameters<FetcherStorage["storeFile"]>[0]) => this.storage.storeFile(input);
   retrieve = (input: Parameters<FetcherStorage["retrieve"]>[0]) => this.storage.retrieve(input);
   verify = (input: Parameters<FetcherStorage["verify"]>[0]) => this.storage.verify(input);
+  checkDeal = (input: Parameters<FetcherStorage["verify"]>[0]) => this.storage.checkDeal(input);
   list = (input?: Parameters<FetcherStorage["listFiles"]>[0]) => this.storage.listFiles(input ?? {});
   delete = (input: Parameters<FetcherStorage["deleteFile"]>[0]) => this.storage.deleteFile(input);
   balance = () => this.storage.getBalance();

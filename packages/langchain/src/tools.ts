@@ -48,7 +48,7 @@ export function createFetcherTools(config: FetcherConfig): (DynamicStructuredToo
       description: "Verify Filecoin storage state for a CID with PDP evidence.",
       schema: verifyInputSchema as any
     }),
-    tool(async (input: any) => stringify(await storage.verify(input)), {
+    tool(async (input: any) => stringify(await storage.checkDeal(input)), {
       name: "check_deal",
       description: "Check Filecoin deal status for a stored CID.",
       schema: verifyInputSchema as any

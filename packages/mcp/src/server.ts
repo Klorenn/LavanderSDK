@@ -53,7 +53,7 @@ export function createFetcherMcpServer(config: FetcherConfig) {
     title: "Check Filecoin deal status",
     description: "Check deal status and PDP proof state for a stored CID.",
     inputSchema: verifyInputSchema
-  }, async (input) => toMcpJsonResult(await storage.verify(input)));
+  }, async (input) => toMcpJsonResult(await storage.checkDeal(input)));
 
   server.registerTool("get_proof", {
     title: "Get PDP proof for a CID",

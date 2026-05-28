@@ -1,4 +1,4 @@
-import type { StorageBackend, StoreResult, VerifyResult } from "@filecoin-agent/core";
+import type { StorageBackend, StoreResult, VerifyResult, BalanceResult, PrepareStorageResult } from "@filecoin-agent/core";
 import { TEST_CID } from "./fixtures.js";
 
 export type FakeStorageBackendOptions = {
@@ -14,12 +14,11 @@ export function createFakeStorageBackend(options: FakeStorageBackendOptions = {}
 
   return {
     async upload(data: Uint8Array): Promise<StoreResult> {
+      const timestamp = new Date().toISOString();
       if (options.failUploads) {
         return {
-          cid,
-          size: data.byteLength,
-          complete: false,
-          filename: "",
+          cid, url: `https://w3s.link/ipfs/${cid}`, size: data.byteLength, timestamp,
+          complete: false, filename: "", dealStatus: "failed", provider: "synapse",
           copies: [],
           failedAttempts: [{ providerId: 1, reason: "fake upload failure" }]
         };
@@ -27,11 +26,9 @@ export function createFakeStorageBackend(options: FakeStorageBackendOptions = {}
 
       stored.set(cid, data);
       return {
-        cid,
-        size: data.byteLength,
-        complete: true,
-        filename: "",
-        copies: Array.from({ length: copyCount }, (_, index) => ({ providerId: index + 1, status: "stored" })),
+        cid, url: `https://w3s.link/ipfs/${cid}`, size: data.byteLength, timestamp,
+        complete: true, filename: "", dealStatus: "active", provider: "synapse",
+        copies: Array.from({ length: copyCount }, (_, i) => ({ providerId: i + 1, status: "stored" })),
         failedAttempts: []
       };
     },
@@ -54,12 +51,12 @@ export function createFakeStorageBackend(options: FakeStorageBackendOptions = {}
       };
     },
 
-    async prepareStorage() {
+    async prepareStorage(): Promise<PrepareStorageResult> {
       return { ready: true, message: "fake backend ready" };
     },
 
-    async getBalance() {
-      return { fil: "1", usdfc: "1", runwayDays: 30 };
+    async getBalance(): Promise<BalanceResult> {
+      return { balanceUsdfc: "100", balanceFil: "1", pendingPayments: "5", availableUsdfc: "95" };
     }
   };
 }

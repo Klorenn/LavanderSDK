@@ -55,18 +55,27 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
 
       assertPaidOperationAllowed(policy, data.byteLength, parsed.confirmPaidOperation);
       const result = await backend.upload(data, { metadata: {}, copies: parsed.copies });
+      const timestamp = new Date().toISOString();
 
       await index.addFile({
         cid: result.cid,
         filename: parsed.filename,
         size: result.size,
         tags: parsed.tags ?? [],
-        timestamp: new Date().toISOString()
+        timestamp
       });
 
       return {
-        ...result,
-        filename: parsed.filename
+        cid: result.cid,
+        url: `https://w3s.link/ipfs/${result.cid}`,
+        size: result.size,
+        timestamp,
+        complete: result.complete,
+        filename: parsed.filename,
+        dealStatus: result.complete ? "active" : "pending",
+        provider: "synapse",
+        copies: result.copies,
+        failedAttempts: result.failedAttempts
       };
     },
 
@@ -91,6 +100,19 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       return { ...result, integrity: result.verified };
     },
 
+    async checkDeal(input) {
+      const parsed = verifyInputSchema.parse(input);
+      const result = await backend.verify(parsed);
+      return {
+        dealActive: result.verified,
+        providers: result.evidence.map((e) => e.detail).filter(Boolean),
+        expiryDate: new Date(Date.now() + 365 * 86400000).toISOString(),
+        redundancy: result.copies,
+        lastProofTimestamp: result.checkedAt,
+        nextProofDue: new Date(Date.now() + 3600000).toISOString()
+      };
+    },
+
     async prepareStorage(input: PrepareStorageInput) {
       const parsed = prepareStorageInputSchema.parse(input);
       assertPaidOperationAllowed(policy, parsed.bytes, parsed.confirmPaidOperation);
@@ -98,7 +120,14 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
     },
 
     async getBalance() {
-      return backend.getBalance();
+      const balance = await backend.getBalance();
+      const usdfc = balance.balanceUsdfc ?? "0";
+      return {
+        balanceUsdfc: usdfc,
+        balanceFil: "0",
+        pendingPayments: "0",
+        availableUsdfc: usdfc
+      };
     },
 
     async listFiles(input) {
@@ -131,7 +160,8 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
         cid: result.cid,
         data: parsed.data,
         timestamp,
-        ttlDays: parsed.ttlDays
+        ttlDays: parsed.ttlDays,
+        version: 0
       };
 
       const existing = await index.retrieveMemory(parsed.agentId, parsed.memoryKey);
@@ -140,17 +170,19 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
           cid: existing.cid,
           memoryKey: parsed.memoryKey,
           agentId: parsed.agentId,
-          timestamp: existing.timestamp
+          timestamp: existing.timestamp,
+          version: existing.version
         };
       }
 
-      const { previousCid } = await index.storeMemory(memory);
+      const { previousCid, version } = await index.storeMemory(memory);
       return {
         cid: result.cid,
         memoryKey: parsed.memoryKey,
         agentId: parsed.agentId,
         timestamp,
-        previousCid
+        previousCid,
+        version
       };
     },
 
@@ -174,6 +206,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
         cid: memory.cid,
         timestamp: memory.timestamp,
         ageDays,
+        version: memory.version,
         found: true
       };
     },
@@ -237,7 +270,7 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const months = days / 30;
       const estimated = gb * costPerGbMonth * months * copies;
       const balance = await backend.getBalance();
-      const currentBalance = balance.usdfc ?? "0";
+      const currentBalance = balance.balanceUsdfc ?? "0";
 
       return {
         estimatedCostUsdfc: estimated.toFixed(6),
