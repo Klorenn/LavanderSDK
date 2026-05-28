@@ -206,10 +206,10 @@ function CodeBlock({ code, language, filename }: { code: string; language: strin
 
 /* ── Terminal component ──────────────────────────────────── */
 
-const asciiArt = `⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡤⢝⣥⣷⣾⡟⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⡇⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣀⡅⢾⣿⣺⠟⡼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⡉⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠘⢰⢠⣿⠿⠃⠀⣹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢧⠙⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣴⣦⡶⠟⠁⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠤⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿`;
+const asciiArt = `   /|、
+  (˚ˎ 。7  
+   |、˜〵  
+  じしˍ,)ノ`;
 
 const terminalLines = [
   { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/90', delay: 0.6 },
@@ -241,25 +241,27 @@ function Terminal() {
   }, [started, visibleLines]);
 
   return (
-    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex flex-col">
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 shrink-0">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
-        <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher — terminal</span>
-      </div>
-      <div className="flex-1 relative overflow-hidden">
-        <pre className="font-mono text-[5px] md:text-[7px] leading-[1.02] text-accent/[0.12] whitespace-pre absolute inset-0 overflow-hidden select-none p-2">
+    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex">
+      <div className="w-[45%] hidden md:flex items-center justify-center border-r border-white/5 p-6">
+        <pre className="font-mono text-accent/70 whitespace-pre leading-[1.08] text-[16px] md:text-[22px]">
           {asciiArt}
         </pre>
-        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 space-y-0.5 z-10">
+      </div>
+      <div className="flex-1 flex flex-col p-4 md:p-6">
+        <div className="flex items-center gap-2 mb-5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
+          <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher ~ terminal</span>
+        </div>
+        <div className="flex-1 space-y-1 font-mono overflow-hidden">
           {terminalLines.slice(0, visibleLines).map((line, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
-              className={`font-mono text-[12px] md:text-sm ${line.color} leading-relaxed`}
+              className={`text-[12px] md:text-sm ${line.color} leading-relaxed`}
             >
               {line.text || '\u00A0'}
               {i === visibleLines - 1 && i >= 4 && (
@@ -272,7 +274,6 @@ function Terminal() {
             </motion.div>
           ))}
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#05040b] to-transparent pointer-events-none" />
       </div>
     </div>
   );
