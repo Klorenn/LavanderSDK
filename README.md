@@ -12,12 +12,12 @@ LangChain        LlamaIndex · SDK   TypeScript native    Verifiable storage
 
 | Package | Purpose | Tools |
 |---|---|---|
-| `@filecoin-agent/core` | Core storage API, spending policy, Synapse backend, memory system | All 17 |
-| `@filecoin-agent/mcp` | MCP stdio server for Claude Desktop and MCP clients | 17 |
-| `@filecoin-agent/langchain` | LangChain DynamicStructuredTools | 17 |
-| `@filecoin-agent/llamaindex` | LlamaIndex FunctionTools | 17 |
-| `@filecoin-agent/sdk` | Programmatic Fetcher class | 17 |
-| `@filecoin-agent/testkit` | Fake backend and fixtures for tests | — |
+| `@fetcher-fil/core` | Core storage API, spending policy, Synapse backend, memory system | All 17 |
+| `@fetcher-fil/mcp` | MCP stdio server for Claude Desktop and MCP clients | 17 |
+| `@fetcher-fil/langchain` | LangChain DynamicStructuredTools | 17 |
+| `@fetcher-fil/llamaindex` | LlamaIndex FunctionTools | 17 |
+| `@fetcher-fil/sdk` | Programmatic Fetcher class | 17 |
+| `@fetcher-fil/testkit` | Fake backend and fixtures for tests | — |
 
 ## Quick Start — MCP (Claude Desktop)
 
@@ -26,7 +26,7 @@ LangChain        LlamaIndex · SDK   TypeScript native    Verifiable storage
   "mcpServers": {
     "fetcher": {
       "command": "npx",
-      "args": ["@filecoin-agent/mcp"],
+      "args": ["@fetcher-fil/mcp"],
       "env": {
         "FILECOIN_PRIVATE_KEY": "0x...",
         "FILECOIN_NETWORK": "calibration",
@@ -44,8 +44,8 @@ list_deals, store_memory, retrieve_memory, update_memory, list_memories, delete_
 ## Quick Start — LangChain
 
 ```ts
-import { createFetcherTools } from "@filecoin-agent/langchain";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFetcherTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const tools = createFetcherTools({
   backend: await createSynapseBackend({ privateKey: "0x..." }),
@@ -56,8 +56,8 @@ const tools = createFetcherTools({
 ## Quick Start — LlamaIndex
 
 ```ts
-import { createFetcherTools } from "@filecoin-agent/llamaindex";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFetcherTools } from "@fetcher-fil/llamaindex";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const tools = createFetcherTools({
   backend: await createSynapseBackend({ privateKey: "0x..." }),
@@ -68,8 +68,8 @@ const tools = createFetcherTools({
 ## Quick Start — SDK Direct
 
 ```ts
-import { Fetcher } from "@filecoin-agent/sdk";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const fetcher = new Fetcher({
   backend: await createSynapseBackend({ privateKey: "0x..." }),

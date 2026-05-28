@@ -12,6 +12,7 @@ export type FetcherConfig = {
   source?: string;
   spendingPolicy?: Partial<SpendingPolicy>;
   backend?: StorageBackend;
+  indexBackend?: import("./indexBackend.js").IndexBackend;
   indexDir?: string;
 };
 

@@ -15,7 +15,7 @@ import {
   estimateCostInputSchema,
   getProofInputSchema,
   type FetcherConfig
-} from "@filecoin-agent/core";
+} from "@fetcher-fil/core";
 
 function stringify(value: unknown): string {
   return JSON.stringify(value, null, 2);

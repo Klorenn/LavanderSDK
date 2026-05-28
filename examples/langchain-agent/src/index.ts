@@ -1,5 +1,5 @@
-import { createFetcherTools } from "@filecoin-agent/langchain";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFetcherTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const privateKey = process.env.FILECOIN_PRIVATE_KEY as `0x${string}` | undefined;
 if (!privateKey) throw new Error("FILECOIN_PRIVATE_KEY is required");

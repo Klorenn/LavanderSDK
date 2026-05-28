@@ -263,7 +263,7 @@ const codeSnippets = {
   "mcpServers": {
     "fetcher": {
       "command": "npx",
-      "args": ["@filecoin-agent/mcp"],
+      "args": ["@fetcher-fil/mcp"],
       "env": {
         "FILECOIN_PRIVATE_KEY": "0x...",
         "FILECOIN_NETWORK": "calibration",
@@ -272,8 +272,8 @@ const codeSnippets = {
     }
   }
 }`,
-  langchain: `import { createFetcherTools } from "@filecoin-agent/langchain";
-import { createSynapseBackend } from "@filecoin-agent/core";
+  langchain: `import { createFetcherTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
 import { AgentExecutor, createOpenAIFunctionsAgent } from "langchain/agents";
 
 const backend = await createSynapseBackend({
@@ -295,8 +295,8 @@ const executor = new AgentExecutor({ agent, tools });
 await executor.invoke({
   input: "Store the quarterly report on Filecoin"
 });`,
-  llamaindex: `import { createFetcherTools } from "@filecoin-agent/llamaindex";
-import { createSynapseBackend } from "@filecoin-agent/core";
+  llamaindex: `import { createFetcherTools } from "@fetcher-fil/llamaindex";
+import { createSynapseBackend } from "@fetcher-fil/core";
 import { OpenAIAgent, OpenAI } from "llamaindex";
 
 const backend = await createSynapseBackend({
@@ -316,8 +316,8 @@ const agent = new OpenAIAgent({
 const response = await agent.chat({
   message: "What files have I stored?"
 });`,
-  sdk: `import { Fetcher } from "@filecoin-agent/sdk";
-import { createSynapseBackend } from "@filecoin-agent/core";
+  sdk: `import { Fetcher } from "@fetcher-fil/sdk";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const fetcher = new Fetcher({
   backend: await createSynapseBackend({
@@ -679,7 +679,7 @@ function DocsSection() {
               <div className="rounded-xl border border-border bg-background p-6">
                 <h4 className="font-semibold text-foreground mb-3">2. Install</h4>
                 <p className="text-sm text-muted-foreground leading-6">
-                  <code className="rounded bg-accent-soft px-1 text-xs text-accent">npm install @filecoin-agent/core</code>. Add your adapter: <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/mcp</code>, <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/langchain</code>, or <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/llamaindex</code>.
+                  <code className="rounded bg-accent-soft px-1 text-xs text-accent">npm install @fetcher-fil/core</code>. Add your adapter: <code className="rounded bg-accent-soft px-1 text-xs text-accent">@fetcher-fil/mcp</code>, <code className="rounded bg-accent-soft px-1 text-xs text-accent">@fetcher-fil/langchain</code>, or <code className="rounded bg-accent-soft px-1 text-xs text-accent">@fetcher-fil/llamaindex</code>.
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-background p-6">
@@ -718,7 +718,7 @@ function DocsSection() {
   <span class="text-[#5b8dff]">"mcpServers"</span>: {
     <span class="text-[#5b8dff]">"fetcher"</span>: {
       <span class="text-[#5b8dff]">"command"</span>: <span class="text-[#7bd4a8]">"npx"</span>,
-      <span class="text-[#5b8dff]">"args"</span>: [<span class="text-[#7bd4a8]">"@filecoin-agent/mcp"</span>],
+      <span class="text-[#5b8dff]">"args"</span>: [<span class="text-[#7bd4a8]">"@fetcher-fil/mcp"</span>],
       <span class="text-[#5b8dff]">"env"</span>: {
         <span class="text-[#5b8dff]">"FILECOIN_PRIVATE_KEY"</span>: <span class="text-[#7bd4a8]">"0x..."</span>,
         <span class="text-[#5b8dff]">"FILECOIN_NETWORK"</span>: <span class="text-[#7bd4a8]">"calibration"</span>,

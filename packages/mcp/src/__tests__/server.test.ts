@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createFakeStorageBackend } from "@filecoin-agent/testkit";
+import { createFakeStorageBackend } from "@fetcher-fil/testkit";
 import { createFetcherMcpServer } from "../server.js";
 
 describe("createFetcherMcpServer", () => {

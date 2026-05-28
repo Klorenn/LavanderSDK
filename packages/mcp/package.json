@@ -1,12 +1,13 @@
 {
-  "name": "@filecoin-agent/mcp",
+  "name": "@fetcher-fil/mcp",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "publishConfig": { "access": "public" },
   "bin": {
-    "filecoin-agent-mcp": "dist/cli.js"
+    "fetcher-fil-mcp": "dist/cli.js"
   },
   "exports": {
     ".": {
@@ -20,12 +21,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@filecoin-agent/core": "0.1.0",
+    "@fetcher-fil/core": "0.1.0",
     "@modelcontextprotocol/server": "latest",
     "zod": "latest"
   },
   "devDependencies": {
-    "@filecoin-agent/testkit": "0.1.0",
+    "@fetcher-fil/testkit": "0.1.0",
     "typescript": "latest",
     "vitest": "latest"
   }

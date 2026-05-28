@@ -1,10 +1,11 @@
 {
-  "name": "@filecoin-agent/langchain",
+  "name": "@fetcher-fil/langchain",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "publishConfig": { "access": "public" },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,14 +18,14 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@filecoin-agent/core": "*",
+    "@fetcher-fil/core": "0.1.0",
     "zod": "latest"
   },
   "peerDependencies": {
     "@langchain/core": ">=0.3.0 <2"
   },
   "devDependencies": {
-    "@filecoin-agent/testkit": "*",
+    "@fetcher-fil/testkit": "*",
     "@langchain/core": "latest",
     "typescript": "latest",
     "vitest": "latest"

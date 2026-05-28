@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFetcherAgent } from "../agent.js";
-import { createFakeStorageBackend, TEST_CID } from "@filecoin-agent/testkit";
+import { createFakeStorageBackend, MemoryIndexBackend, TEST_CID } from "@fetcher-fil/testkit";
 
 const CONTENT = "This is test content that must be at least 127 bytes long to pass the Filecoin minimum size check enforced by the SDK. Extra padding.";
 
@@ -43,5 +43,20 @@ describe("createFetcherAgent — store/retrieve/verify", () => {
     const result = await agent.verify({ cid: TEST_CID });
 
     expect(result.verified).toBe(true);
+  });
+
+  it("uses injected indexBackend — stored file appears in MemoryIndexBackend", async () => {
+    const indexBackend = new MemoryIndexBackend();
+    const agent = createFetcherAgent({
+      backend: createFakeStorageBackend(),
+      indexBackend,
+      spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
+    });
+
+    await agent.storeFile({ content: CONTENT, filename: "injected.txt" });
+    const page = await indexBackend.listFiles({});
+
+    expect(page.total).toBe(1);
+    expect(page.files[0].filename).toBe("injected.txt");
   });
 });

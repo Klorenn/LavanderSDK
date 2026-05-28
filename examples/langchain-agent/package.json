@@ -7,8 +7,8 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
-    "@filecoin-agent/core": "*",
-    "@filecoin-agent/langchain": "*",
+    "@fetcher-fil/core": "*",
+    "@fetcher-fil/langchain": "*",
     "@langchain/core": "latest",
     "tsx": "latest"
   }

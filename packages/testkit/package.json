@@ -1,5 +1,5 @@
 {
-  "name": "@filecoin-agent/testkit",
+  "name": "@fetcher-fil/testkit",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@filecoin-agent/core": "0.1.0"
+    "@fetcher-fil/core": "0.1.0"
   },
   "devDependencies": {
     "typescript": "latest",

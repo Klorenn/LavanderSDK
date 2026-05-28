@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFetcherAgent } from "../agent.js";
-import { createFakeStorageBackend, TEST_CID } from "@filecoin-agent/testkit";
+import { createFakeStorageBackend, TEST_CID } from "@fetcher-fil/testkit";
 import { FetcherError } from "../errors.js";
 
 const LONG_TEXT = "This is test content that needs to be at least 127 bytes long to pass the Filecoin minimum size requirement enforced at the SDK layer.";

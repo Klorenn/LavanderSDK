@@ -9,7 +9,7 @@ Start on Calibration testnet. Mainnet should be an explicit decision.
   "mcpServers": {
     "filecoin-agent": {
       "command": "npx",
-      "args": ["@filecoin-agent/mcp"],
+      "args": ["@fetcher-fil/mcp"],
       "env": {
         "FILECOIN_PRIVATE_KEY": "0x...",
         "FILECOIN_NETWORK": "calibration",
@@ -29,8 +29,8 @@ Store this short report on Filecoin and verify it after upload.
 ## LangChain
 
 ```ts
-import { createFilecoinTools } from "@filecoin-agent/langchain";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFilecoinTools } from "@fetcher-fil/langchain";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}` });
 const tools = createFilecoinTools({
@@ -42,8 +42,8 @@ const tools = createFilecoinTools({
 ## LlamaIndex
 
 ```ts
-import { createFilecoinTools } from "@filecoin-agent/llamaindex";
-import { createSynapseBackend } from "@filecoin-agent/core";
+import { createFilecoinTools } from "@fetcher-fil/llamaindex";
+import { createSynapseBackend } from "@fetcher-fil/core";
 
 const backend = await createSynapseBackend({ privateKey: process.env.FILECOIN_PRIVATE_KEY as `0x${string}` });
 const tools = createFilecoinTools({

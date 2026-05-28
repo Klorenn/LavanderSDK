@@ -1,4 +1,4 @@
-import { createFetcherAgent, type FetcherConfig, type FetcherStorage } from "@filecoin-agent/core";
+import { createFetcherAgent, type FetcherConfig, type FetcherStorage } from "@fetcher-fil/core";
 
 export class Fetcher {
   private storage: FetcherStorage;

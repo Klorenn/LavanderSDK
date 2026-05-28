@@ -14,7 +14,7 @@ import {
   estimateCostInputSchema,
   getProofInputSchema,
   type FetcherConfig
-} from "@filecoin-agent/core";
+} from "@fetcher-fil/core";
 import { McpServer } from "@modelcontextprotocol/server";
 import { toMcpJsonResult } from "./toolResult.js";
 

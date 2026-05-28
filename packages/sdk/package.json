@@ -1,10 +1,11 @@
 {
-  "name": "@filecoin-agent/sdk",
+  "name": "@fetcher-fil/sdk",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "publishConfig": { "access": "public" },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,10 +18,10 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@filecoin-agent/core": "*"
+    "@fetcher-fil/core": "0.1.0"
   },
   "devDependencies": {
-    "@filecoin-agent/testkit": "*",
+    "@fetcher-fil/testkit": "*",
     "typescript": "latest",
     "vitest": "latest"
   }

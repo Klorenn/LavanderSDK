@@ -1,4 +1,4 @@
-import type { StorageBackend, StoreResult, VerifyResult, BalanceResult, PrepareStorageResult } from "@filecoin-agent/core";
+import type { StorageBackend, StoreResult, VerifyResult, BalanceResult, PrepareStorageResult } from "@fetcher-fil/core";
 import { TEST_CID } from "./fixtures.js";
 
 export type FakeStorageBackendOptions = {

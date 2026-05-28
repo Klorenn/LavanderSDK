@@ -4,11 +4,11 @@ Filecoin Agent SDK is a thin agent-native layer over Filecoin Onchain Cloud. The
 
 ## Decision
 
-Adapters depend on `@filecoin-agent/core`. Only core knows about Synapse.
+Adapters depend on `@fetcher-fil/core`. Only core knows about Synapse.
 
 ```txt
 MCP tools ───────┐
-LangChain tools ─┼──> @filecoin-agent/core ──> Synapse SDK ──> Filecoin Onchain Cloud
+LangChain tools ─┼──> @fetcher-fil/core ──> Synapse SDK ──> Filecoin Onchain Cloud
 LlamaIndex tools ┘
 ```
 

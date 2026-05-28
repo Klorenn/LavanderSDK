@@ -9,7 +9,7 @@ if (!privateKey) {
   throw new Error("FILECOIN_PRIVATE_KEY is required for the MCP server");
 }
 
-const { createSynapseBackend } = await import("@filecoin-agent/core");
+const { createSynapseBackend } = await import("@fetcher-fil/core");
 
 const server = createFetcherMcpServer({
   privateKey,
