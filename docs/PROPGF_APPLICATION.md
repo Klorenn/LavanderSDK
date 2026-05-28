@@ -57,16 +57,16 @@ Fetcher is a TypeScript SDK that gives AI agents — Claude, GPT-4o, Gemini — 
 
 ### 2.3 Total Funding Requested (USD)
 
-**[tu monto]**
+**$2,000**
 
 ### 2.4 Milestones & Budget
 
 | # | Milestone | Deliverable | Timeline | Budget |
 |---|---|---|---|---|
-| M1 | Core Storage + MCP Server | MCP server functional with 6 storage/verify tools over Synapse. Published to npm. Tests on Calibration. | Weeks 1-2 | [$$] |
-| M2 | Agent Memory System | 5 memory tools (store, retrieve, update, list, delete). Persistence between sessions. Demo video. | Weeks 3-4 | [$$] |
-| M3 | Observability + LangChain + LlamaIndex | 4 observe tools. Native LangChain toolkit. Native LlamaIndex tools. SDK direct class. | Weeks 5-7 | [$$] |
-| M4 | Documentation + Launch | Full docs site, integration guides, landing page live, community announcement, v1.0.0 npm release, final ProPGF report. | Week 8 | [$$] |
+| M1 | Core Storage + MCP Server | MCP server functional with 6 storage/verify tools over Synapse. Published to npm. Tests on Calibration. | Weeks 1-2 | $500 |
+| M2 | Agent Memory System | 5 memory tools (store, retrieve, update, list, delete). Persistence between sessions. Demo video. | Weeks 3-4 | $500 |
+| M3 | Observability + LangChain + LlamaIndex | 4 observe tools. Native LangChain toolkit. Native LlamaIndex tools. SDK direct class. | Weeks 5-7 | $500 |
+| M4 | Documentation + Launch | Full docs site, integration guides, landing page live, community announcement, v1.0.0 npm release, final ProPGF report. | Week 8 | $500 |
 
 ---
 
