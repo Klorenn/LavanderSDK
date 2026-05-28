@@ -1,6 +1,20 @@
-// IndexedFile and IndexedMemory are defined in indexStore.ts — imported for local use and re-exported.
-import type { IndexedFile, IndexedMemory } from "./indexStore.js";
-export type { IndexedFile, IndexedMemory };
+export type IndexedFile = {
+  cid: string;
+  filename: string;
+  size: number;
+  tags: string[];
+  timestamp: string;
+};
+
+export type IndexedMemory = {
+  agentId: string;
+  memoryKey: string;
+  cid: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+  ttlDays?: number;
+  version: number;
+};
 
 export type ListFilesOptions = {
   tag?: string;
