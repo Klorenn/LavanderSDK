@@ -336,7 +336,7 @@ function Hero() {
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 text-center text-sm text-muted-foreground">
           <span>Open source · </span>
-          <a href="https://github.com/Klorenn" target="_blank" rel="noopener" className="text-accent/80 hover:text-accent transition">github.com/Klorenn</a>
+          <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="text-accent/80 hover:text-accent transition">github.com/Klorenn/LavanderSDK</a>
           <span className="mx-2 text-border">|</span>
           <span>2026</span>
         </motion.div>
@@ -1016,7 +1016,7 @@ function Footer() {
             <div className="flex items-center gap-3"><SpiritLogo /><span className="text-xl font-bold tracking-tight">Fetcher</span></div>
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">The spirit messenger — 17 tools for AI agents on Filecoin Onchain Cloud. MCP, LangChain, LlamaIndex, SDK.</p>
             <div className="mt-4 flex items-center gap-3">
-              <a href="https://github.com/Klorenn/" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">GitHub</a>
+              <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">GitHub</a>
               <span className="text-border">·</span>
               <a href="https://x.com/kl0ren" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">X / Twitter</a>
             </div>
@@ -1031,13 +1031,13 @@ function Footer() {
             <h4 className="font-semibold text-foreground text-sm mb-3">Ecosystem</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <a href="https://filecoin.io" target="_blank" rel="noopener" className="block hover:text-foreground transition">Filecoin</a>
-              <a href="https://github.com/Klorenn/" target="_blank" rel="noopener" className="block hover:text-foreground transition">GitHub</a>
+              <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="block hover:text-foreground transition">GitHub</a>
               <span className="block text-accent/70">ProPGF Batch 3</span>
             </div>
           </div>
         </div>
         <div className="mt-10 pt-6 border-t border-border flex flex-wrap items-center justify-between text-xs text-muted-foreground gap-4">
-          <span>MIT License · Developed by <a href="https://github.com/Klorenn" target="_blank" rel="noopener" className="text-accent hover:text-accent/80 transition">Kl0ren</a> · 2026</span>
+          <span>MIT License · Developed by <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="text-accent hover:text-accent/80 transition">Kl0ren</a> · 2026</span>
           <span>Built for the Filecoin ecosystem</span>
         </div>
       </div>
