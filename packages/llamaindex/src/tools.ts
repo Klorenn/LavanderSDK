@@ -1,60 +1,94 @@
 import { tool } from "llamaindex";
 import {
-  createFilecoinAgent,
+  createFetcherAgent,
   prepareStorageInputSchema,
   retrieveInputSchema,
   storeFileInputSchema,
-  storeTextInputSchema,
   verifyInputSchema,
-  type FilecoinAgentConfig
+  listFilesInputSchema,
+  deleteFileInputSchema,
+  storeMemoryInputSchema,
+  retrieveMemoryInputSchema,
+  updateMemoryInputSchema,
+  type FetcherConfig
 } from "@filecoin-agent/core";
 
 function stringify(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-export function createFilecoinTools(config: FilecoinAgentConfig) {
-  const storage = createFilecoinAgent(config);
+export function createFetcherTools(config: FetcherConfig) {
+  const storage = createFetcherAgent(config);
 
   return [
     tool({
-      name: "filecoin_store_text",
-      description: "Store short text on Filecoin Onchain Cloud and return a PieceCID.",
-      parameters: storeTextInputSchema,
-      execute: async (input) => stringify(await storage.storeText(input))
-    }),
-    tool({
-      name: "filecoin_store_file",
-      description: "Store a local file on Filecoin Onchain Cloud and return a PieceCID.",
+      name: "store_file",
+      description: "Store a file on Filecoin Onchain Cloud. Accepts text or binary content and returns a CID.",
       parameters: storeFileInputSchema,
-      execute: async (input) => stringify(await storage.storeFile(input))
+      execute: async (input: any) => stringify(await storage.storeFile(input))
     }),
     tool({
-      name: "filecoin_retrieve",
-      description: "Retrieve Filecoin data by PieceCID. Use outputPath for large data.",
+      name: "retrieve_file",
+      description: "Retrieve data from Filecoin by CID.",
       parameters: retrieveInputSchema,
-      execute: async (input) => {
+      execute: async (input: any) => {
         const result = await storage.retrieve(input);
         return stringify({ ...result, bytes: result.bytes ? `[${result.bytes.byteLength} bytes]` : undefined });
       }
     }),
     tool({
-      name: "filecoin_verify",
-      description: "Verify Filecoin storage state for a PieceCID.",
-      parameters: verifyInputSchema,
-      execute: async (input) => stringify(await storage.verify(input))
+      name: "list_files",
+      description: "List files uploaded by this API key. Filter by tag.",
+      parameters: listFilesInputSchema,
+      execute: async (input: any) => stringify(await storage.listFiles(input))
     }),
     tool({
-      name: "filecoin_prepare_storage",
+      name: "verify_cid",
+      description: "Verify Filecoin storage state for a CID with PDP evidence.",
+      parameters: verifyInputSchema,
+      execute: async (input: any) => stringify(await storage.verify(input))
+    }),
+    tool({
+      name: "check_deal",
+      description: "Check Filecoin deal status for a stored CID.",
+      parameters: verifyInputSchema,
+      execute: async (input: any) => stringify(await storage.verify(input))
+    }),
+    tool({
+      name: "prepare_storage",
       description: "Prepare balance and approval for Filecoin storage uploads.",
       parameters: prepareStorageInputSchema,
-      execute: async (input) => stringify(await storage.prepareStorage(input))
+      execute: async (input: any) => stringify(await storage.prepareStorage(input))
     }),
     tool({
-      name: "filecoin_balance",
+      name: "delete_file",
+      description: "Remove a file from the local index. Data remains on Filecoin permanently.",
+      parameters: deleteFileInputSchema,
+      execute: async (input: any) => stringify(await storage.deleteFile(input))
+    }),
+    tool({
+      name: "balance",
       description: "Check Filecoin storage payment balance and runway.",
       parameters: undefined,
       execute: async () => stringify(await storage.getBalance())
+    }),
+    tool({
+      name: "store_memory",
+      description: "Store a structured memory object for an agent. Persists between sessions.",
+      parameters: storeMemoryInputSchema,
+      execute: async (input: any) => stringify(await storage.storeMemory(input))
+    }),
+    tool({
+      name: "retrieve_memory",
+      description: "Retrieve agent memory by agent ID and key.",
+      parameters: retrieveMemoryInputSchema,
+      execute: async (input: any) => stringify(await storage.retrieveMemory(input))
+    }),
+    tool({
+      name: "update_memory",
+      description: "Update specific fields in an existing memory object.",
+      parameters: updateMemoryInputSchema,
+      execute: async (input: any) => stringify(await storage.updateMemory(input))
     })
   ];
 }

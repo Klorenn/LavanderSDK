@@ -1,2 +1,2 @@
-export const TEST_PIECE_CID = "bafkzcibcccccccccccccccccccccccccccccccccccccccccccccccccccc";
-export const SECOND_TEST_PIECE_CID = "bafkzcibdddddddddddddddddddddddddddddddddddddddddddddddddddd";
+export const TEST_CID = "bafkzcibcccccccccccccccccccccccccccccccccccccccccccccccccccc";
+export const SECOND_TEST_CID = "bafkzcibdddddddddddddddddddddddddddddddddddddddddddddddddddd";

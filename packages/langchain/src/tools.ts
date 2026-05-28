@@ -1,54 +1,113 @@
-import { tool } from "@langchain/core/tools";
+import { DynamicStructuredTool, DynamicTool, tool } from "@langchain/core/tools";
 import {
-  createFilecoinAgent,
+  createFetcherAgent,
   prepareStorageInputSchema,
   retrieveInputSchema,
   storeFileInputSchema,
-  storeTextInputSchema,
   verifyInputSchema,
-  type FilecoinAgentConfig
+  listFilesInputSchema,
+  deleteFileInputSchema,
+  storeMemoryInputSchema,
+  retrieveMemoryInputSchema,
+  updateMemoryInputSchema,
+  type FetcherConfig
 } from "@filecoin-agent/core";
 
 function stringify(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-export function createFilecoinTools(config: FilecoinAgentConfig) {
-  const storage = createFilecoinAgent(config);
+export function createFetcherTools(config: FetcherConfig): (DynamicStructuredTool | DynamicTool)[] {
+  const storage = createFetcherAgent(config);
 
   return [
-    tool(async (input) => stringify(await storage.storeText(input)), {
-      name: "filecoin_store_text",
-      description: "Store short text on Filecoin Onchain Cloud and return a PieceCID.",
-      schema: storeTextInputSchema
-    }),
-    tool(async (input) => stringify(await storage.storeFile(input)), {
-      name: "filecoin_store_file",
-      description: "Store a local file on Filecoin Onchain Cloud and return a PieceCID.",
-      schema: storeFileInputSchema
-    }),
-    tool(async (input) => {
-      const result = await storage.retrieve(input);
-      return stringify({ ...result, bytes: result.bytes ? `[${result.bytes.byteLength} bytes]` : undefined });
-    }, {
-      name: "filecoin_retrieve",
-      description: "Retrieve Filecoin data by PieceCID. Use outputPath for large data.",
-      schema: retrieveInputSchema
-    }),
-    tool(async (input) => stringify(await storage.verify(input)), {
-      name: "filecoin_verify",
-      description: "Verify Filecoin storage state for a PieceCID.",
-      schema: verifyInputSchema
-    }),
-    tool(async (input) => stringify(await storage.prepareStorage(input)), {
-      name: "filecoin_prepare_storage",
-      description: "Prepare balance and approval for Filecoin storage uploads.",
-      schema: prepareStorageInputSchema
-    }),
-    tool(async () => stringify(await storage.getBalance()), {
-      name: "filecoin_balance",
+    tool(
+      async (input) => stringify(await storage.storeFile(input as Parameters<typeof storage.storeFile>[0])),
+      {
+        name: "store_file",
+        description: "Store a file on Filecoin Onchain Cloud. Accepts text or binary content and returns a CID.",
+        schema: storeFileInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => {
+        const result = await storage.retrieve(input as Parameters<typeof storage.retrieve>[0]);
+        return stringify({ ...result, bytes: result.bytes ? `[${result.bytes.byteLength} bytes]` : undefined });
+      },
+      {
+        name: "retrieve_file",
+        description: "Retrieve data from Filecoin by CID.",
+        schema: retrieveInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.listFiles(input as Parameters<typeof storage.listFiles>[0])),
+      {
+        name: "list_files",
+        description: "List files uploaded by this API key. Filter by tag.",
+        schema: listFilesInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.verify(input as Parameters<typeof storage.verify>[0])),
+      {
+        name: "verify_cid",
+        description: "Verify Filecoin storage state for a CID with PDP evidence.",
+        schema: verifyInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.verify(input as Parameters<typeof storage.verify>[0])),
+      {
+        name: "check_deal",
+        description: "Check Filecoin deal status for a stored CID.",
+        schema: verifyInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.prepareStorage(input as Parameters<typeof storage.prepareStorage>[0])),
+      {
+        name: "prepare_storage",
+        description: "Prepare balance and approval for Filecoin storage uploads.",
+        schema: prepareStorageInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.deleteFile(input as Parameters<typeof storage.deleteFile>[0])),
+      {
+        name: "delete_file",
+        description: "Remove a file from the local index. Data remains on Filecoin permanently.",
+        schema: deleteFileInputSchema as any
+      }
+    ),
+    new DynamicTool({
+      name: "balance",
       description: "Check Filecoin storage payment balance and runway.",
-      schema: undefined
-    })
+      func: async () => stringify(await storage.getBalance())
+    }),
+    tool(
+      async (input) => stringify(await storage.storeMemory(input as Parameters<typeof storage.storeMemory>[0])),
+      {
+        name: "store_memory",
+        description: "Store a structured memory object for an agent. Persists between sessions.",
+        schema: storeMemoryInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.retrieveMemory(input as Parameters<typeof storage.retrieveMemory>[0])),
+      {
+        name: "retrieve_memory",
+        description: "Retrieve agent memory by agent ID and key.",
+        schema: retrieveMemoryInputSchema as any
+      }
+    ),
+    tool(
+      async (input) => stringify(await storage.updateMemory(input as Parameters<typeof storage.updateMemory>[0])),
+      {
+        name: "update_memory",
+        description: "Update specific fields in an existing memory object.",
+        schema: updateMemoryInputSchema as any
+      }
+    )
   ];
 }

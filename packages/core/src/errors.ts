@@ -1,17 +1,19 @@
-export type FilecoinAgentErrorCode =
+export type FetcherErrorCode =
   | "CONFIGURATION_ERROR"
   | "VALIDATION_ERROR"
   | "SPENDING_POLICY_BLOCKED"
   | "BACKEND_ERROR"
-  | "FILESYSTEM_ERROR";
+  | "FILESYSTEM_ERROR"
+  | "NOT_FOUND"
+  | "SIZE_TOO_SMALL";
 
-export class FilecoinAgentError extends Error {
-  readonly code: FilecoinAgentErrorCode;
+export class FetcherError extends Error {
+  readonly code: FetcherErrorCode;
   readonly cause?: unknown;
 
-  constructor(code: FilecoinAgentErrorCode, message: string, options: { cause?: unknown } = {}) {
+  constructor(code: FetcherErrorCode, message: string, options: { cause?: unknown } = {}) {
     super(message);
-    this.name = "FilecoinAgentError";
+    this.name = "FetcherError";
     this.code = code;
     this.cause = options.cause;
   }

@@ -1,31 +1,36 @@
 import { describe, expect, it } from "vitest";
-import { createFakeStorageBackend, TEST_PIECE_CID } from "@filecoin-agent/testkit";
-import { createFilecoinTools } from "../tools.js";
+import { createFakeStorageBackend, TEST_CID } from "@filecoin-agent/testkit";
+import { createFetcherTools } from "../tools.js";
 
-describe("createFilecoinTools", () => {
+describe("createFetcherTools", () => {
   it("returns named LangChain tools", () => {
-    const tools = createFilecoinTools({
+    const tools = createFetcherTools({
       backend: createFakeStorageBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false }
     });
 
     expect(tools.map((tool) => tool.name)).toEqual([
-      "filecoin_store_text",
-      "filecoin_store_file",
-      "filecoin_retrieve",
-      "filecoin_verify",
-      "filecoin_prepare_storage",
-      "filecoin_balance"
+      "store_file",
+      "retrieve_file",
+      "list_files",
+      "verify_cid",
+      "check_deal",
+      "prepare_storage",
+      "delete_file",
+      "balance",
+      "store_memory",
+      "retrieve_memory",
+      "update_memory"
     ]);
   });
 
-  it("stores text and returns JSON", async () => {
-    const [storeText] = createFilecoinTools({
+  it("stores content and returns JSON", async () => {
+    const [storeFile] = createFetcherTools({
       backend: createFakeStorageBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false }
     });
 
-    const result = await storeText.invoke({ text: "langchain text" });
-    expect(JSON.parse(String(result))).toMatchObject({ pieceCid: TEST_PIECE_CID, complete: true });
+    const result = await storeFile.invoke({ content: "This is langchain test content that must be at least 127 bytes long to pass Filecoin minimum size check enforced by the SDK layer.", filename: "test.txt" });
+    expect(JSON.parse(String(result))).toMatchObject({ cid: TEST_CID, complete: true });
   });
 });

@@ -14,7 +14,8 @@
     "test:watch": "npm run test:watch --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "dev": "npm --workspace apps/landing run dev",
-    "preview": "npm --workspace apps/landing run preview"
+    "preview": "npm --workspace apps/landing run preview",
+    "validate": "npx tsx scripts/e2e-validate.ts"
   },
   "devDependencies": {
     "@modelcontextprotocol/server": "^2.0.0-alpha.2",

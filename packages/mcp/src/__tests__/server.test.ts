@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createFilecoinMcpServer } from "../server.js";
 import { createFakeStorageBackend } from "@filecoin-agent/testkit";
+import { createFetcherMcpServer } from "../server.js";
 
-const pieceCid = "bafkzcibeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-
-describe("createFilecoinMcpServer", () => {
-  it("creates an MCP server with Filecoin identity", () => {
-    const server = createFilecoinMcpServer({
-      backend: createFakeStorageBackend({ pieceCid }),
+describe("createFetcherMcpServer", () => {
+  it("creates an MCP server with Fetcher identity", () => {
+    const server = createFetcherMcpServer({
+      backend: createFakeStorageBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false }
     });
 

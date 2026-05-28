@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 import { StdioServerTransport } from "@modelcontextprotocol/server";
-import { createFilecoinMcpServer } from "./server.js";
+import { createFetcherMcpServer } from "./server.js";
 
 const privateKey = process.env.FILECOIN_PRIVATE_KEY as `0x${string}` | undefined;
 const network = process.env.FILECOIN_NETWORK === "mainnet" ? "mainnet" : "calibration";
 
 if (!privateKey) {
-  throw new Error("FILECOIN_PRIVATE_KEY is required for the production MCP server");
+  throw new Error("FILECOIN_PRIVATE_KEY is required for the MCP server");
 }
 
 const { createSynapseBackend } = await import("@filecoin-agent/core");
 
-const server = createFilecoinMcpServer({
+const server = createFetcherMcpServer({
   privateKey,
   network,
   backend: await createSynapseBackend({ privateKey, network }),

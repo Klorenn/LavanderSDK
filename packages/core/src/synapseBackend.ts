@@ -1,6 +1,6 @@
 import { Synapse, mainnet } from "@filoz/synapse-sdk";
 import { privateKeyToAccount } from "viem/accounts";
-import { FilecoinAgentError } from "./errors.js";
+import { FetcherError } from "./errors.js";
 import { DEFAULT_NETWORK, DEFAULT_SOURCE } from "./defaults.js";
 import type {
   BalanceResult,
@@ -20,7 +20,7 @@ export type SynapseBackendConfig = {
 
 export async function createSynapseBackend(config: SynapseBackendConfig): Promise<StorageBackend> {
   if (!config.privateKey) {
-    throw new FilecoinAgentError("CONFIGURATION_ERROR", "A Filecoin private key is required to create the Synapse backend.");
+    throw new FetcherError("CONFIGURATION_ERROR", "A Filecoin private key is required to create the Synapse backend.");
   }
 
   const network = config.network ?? DEFAULT_NETWORK;
@@ -39,9 +39,10 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
       });
 
       return {
-        pieceCid: String(result.pieceCid),
+        cid: String(result.pieceCid),
         size: Number(result.size),
         complete: Boolean(result.complete),
+        filename: "",
         copies: Array.isArray(result.copies)
           ? result.copies.map((copy) => ({
               providerId: copy.providerId === undefined ? undefined : Number(copy.providerId),
@@ -58,7 +59,7 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
     },
 
     async download(input) {
-      return synapse.storage.download({ pieceCid: input.pieceCid, withCDN: input.withCDN });
+      return synapse.storage.download({ pieceCid: input.cid, withCDN: input.withCDN });
     },
 
     async verify(input): Promise<VerifyResult> {
@@ -69,7 +70,7 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
       for (const dataSet of dataSets) {
         const context = await synapse.storage.createContext({ dataSetId: dataSet.pdpVerifierDataSetId });
         for await (const piece of context.getPieces()) {
-          if (String(piece.pieceCid) === input.pieceCid) {
+          if (String(piece.pieceCid) === input.cid) {
             copies += 1;
             evidence.push({
               type: "dataset",
@@ -81,12 +82,16 @@ export async function createSynapseBackend(config: SynapseBackendConfig): Promis
       }
 
       return {
-        pieceCid: input.pieceCid,
+        cid: input.cid,
         verified: copies > 0,
+        accessible: copies > 0,
         status: copies > 0 ? "stored" : "missing",
         copies,
         checkedAt: new Date().toISOString(),
-        evidence
+        evidence,
+        integrity: copies > 0,
+        gatewaysChecked: 1,
+        latencyMs: 0
       };
     },
 
