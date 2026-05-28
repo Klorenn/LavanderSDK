@@ -663,6 +663,282 @@ function EcosystemSection() {
   );
 }
 
+function DocsSection() {
+  return (
+    <section id="docs" className="px-8 py-24 md:px-28 md:py-32 bg-card/20">
+      <div className="mx-auto max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-accent mb-3">Documentation</p>
+          <h2 className="font-serif text-4xl leading-tight text-foreground md:text-5xl">Everything you need</h2>
+          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            From zero to Filecoin in five minutes. MCP, LangChain, LlamaIndex, SDK — same 17 tools, same semantics.
+          </p>
+        </motion.div>
+
+        <div className="space-y-20">
+          {/* Quickstart */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-2">Get started</h3>
+            <h2 className="font-serif text-3xl text-foreground mb-6">Quickstart</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-xl border border-border bg-background p-6">
+                <h4 className="font-semibold text-foreground mb-3">1. Get a wallet</h4>
+                <p className="text-sm text-muted-foreground leading-6">
+                  Add Filecoin Calibration to MetaMask: RPC <code className="rounded bg-accent-soft px-1 text-xs text-accent">https://api.calibration.node.glif.io/rpc/v1</code>, Chain ID <code className="rounded bg-accent-soft px-1 text-xs text-accent">314159</code>. Get test tokens at <code className="rounded bg-accent-soft px-1 text-xs text-accent">faucet.calibration.fildev.network</code>.
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-6">
+                <h4 className="font-semibold text-foreground mb-3">2. Install</h4>
+                <p className="text-sm text-muted-foreground leading-6">
+                  <code className="rounded bg-accent-soft px-1 text-xs text-accent">npm install @filecoin-agent/core</code>. Add your adapter: <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/mcp</code>, <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/langchain</code>, or <code className="rounded bg-accent-soft px-1 text-xs text-accent">@filecoin-agent/llamaindex</code>.
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-6">
+                <h4 className="font-semibold text-foreground mb-3">3. Configure</h4>
+                <p className="text-sm text-muted-foreground leading-6">
+                  Set <code className="rounded bg-accent-soft px-1 text-xs text-accent">FILECOIN_PRIVATE_KEY</code> env var with your EVM wallet private key. Start on Calibration testnet first.
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-background p-6">
+                <h4 className="font-semibold text-foreground mb-3">4. Use it</h4>
+                <p className="text-sm text-muted-foreground leading-6">
+                  For MCP: add the config to Claude Desktop. For code: <code className="rounded bg-accent-soft px-1 text-xs text-accent">createFetcherTools({'{ backend, spendingPolicy }'})</code>. That's it. 17 tools available.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* MCP Setup */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-2">Integration</h3>
+            <h2 className="font-serif text-3xl text-foreground mb-6">MCP Setup — Claude Desktop</h2>
+            <div className="rounded-xl border border-border bg-[#05040b] p-5 md:p-7">
+              <div className="mb-4 flex gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#ff6b8b]" />
+                <span className="h-3 w-3 rounded-full bg-[#ffd166]" />
+                <span className="h-3 w-3 rounded-full bg-[#7bd4a8]" />
+                <span className="ml-4 font-mono text-xs text-muted-foreground">~/.config/claude/claude_desktop_config.json</span>
+              </div>
+              <pre className="font-mono text-xs md:text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">
+{`{
+  <span class="text-[#5b8dff]">"mcpServers"</span>: {
+    <span class="text-[#5b8dff]">"fetcher"</span>: {
+      <span class="text-[#5b8dff]">"command"</span>: <span class="text-[#7bd4a8]">"npx"</span>,
+      <span class="text-[#5b8dff]">"args"</span>: [<span class="text-[#7bd4a8]">"@filecoin-agent/mcp"</span>],
+      <span class="text-[#5b8dff]">"env"</span>: {
+        <span class="text-[#5b8dff]">"FILECOIN_PRIVATE_KEY"</span>: <span class="text-[#7bd4a8]">"0x..."</span>,
+        <span class="text-[#5b8dff]">"FILECOIN_NETWORK"</span>: <span class="text-[#7bd4a8]">"calibration"</span>,
+        <span class="text-[#5b8dff]">"FILECOIN_AGENT_ALLOW_PAID"</span>: <span class="text-[#7bd4a8]">"true"</span>
+      }
+    }
+  }
+}`}
+              </pre>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {[
+                { label: 'Env', value: 'FILECOIN_PRIVATE_KEY', desc: 'EVM wallet private key (required)' },
+                { label: 'Env', value: 'FILECOIN_NETWORK', desc: 'calibration | mainnet (default: calibration)' },
+                { label: 'Env', value: 'FILECOIN_AGENT_ALLOW_PAID', desc: 'true to enable storage payments' },
+              ].map((env) => (
+                <div key={env.value} className="rounded-lg border border-border bg-background p-4">
+                  <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold text-accent uppercase">{env.label}</span>
+                  <code className="mt-2 block text-xs font-semibold text-foreground">{env.value}</code>
+                  <p className="mt-1 text-xs text-muted-foreground">{env.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* API Reference — all 17 tools */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-2">Reference</h3>
+            <h2 className="font-serif text-3xl text-foreground mb-6">API — All 17 Tools</h2>
+            <p className="mb-10 text-muted-foreground leading-7">
+              Available on all adapters: MCP, LangChain, LlamaIndex, SDK. Same names, same semantics.
+            </p>
+
+            {[
+              { group: 'Storage', color: 'text-[#5b8dff]', tools: [
+                { name: 'store_file', params: 'content, filename, mimeType?, tags?, copies?, confirmPaidOperation?', returns: '{ cid, url, size, timestamp, dealStatus, provider }' },
+                { name: 'retrieve_file', params: 'cid, outputPath?, encoding?', returns: '{ content, mimeType, size, cid, latencyMs }' },
+                { name: 'list_files', params: 'tag?, limit?, before?', returns: '{ files: [{ cid, filename, size, tags, dealStatus, url }], total, hasMore }' },
+                { name: 'delete_file', params: 'cid, confirm', returns: '{ removedFromIndex, cid, note }' },
+              ]},
+              { group: 'Verify', color: 'text-[#a87dd4]', tools: [
+                { name: 'verify_cid', params: 'cid, checkGateways?', returns: '{ verified, accessible, integrity, size, gatewaysChecked }' },
+                { name: 'check_deal', params: 'cid', returns: '{ dealActive, providers[], expiryDate, redundancy, lastProofTimestamp }' },
+                { name: 'get_proof', params: 'cid', returns: '{ proof, proofType, verifiedAt, provider, blockNumber? }' },
+              ]},
+              { group: 'Observe', color: 'text-[#7bd4a8]', tools: [
+                { name: 'get_balance', params: '—', returns: '{ balanceUsdfc, balanceFil, pendingPayments, availableUsdfc }' },
+                { name: 'estimate_cost', params: 'sizeBytes, copies?, durationDays?', returns: '{ estimatedCostUsdfc, breakdown: { storageCost, retrievalCost, providerFee } }' },
+                { name: 'get_storage_stats', params: 'agentId?', returns: '{ totalFiles, totalSizeGb, totalMemories, activeDeals, tagsUsed[] }' },
+                { name: 'list_deals', params: 'status?, limit?', returns: '{ deals: [{ cid, providers[], expiry, status }], total }' },
+              ]},
+              { group: 'Memory', color: 'text-[#ffd166]', tools: [
+                { name: 'store_memory', params: 'agentId, memoryKey, data, ttlDays?, overwrite?', returns: '{ cid, memoryKey, agentId, timestamp, version, previousCid? }' },
+                { name: 'retrieve_memory', params: 'agentId, memoryKey, fallback?', returns: '{ data, cid, timestamp, ageDays, version, found }' },
+                { name: 'update_memory', params: 'agentId, memoryKey, patch', returns: '{ cid, previousCid, memoryKey, updatedFields[] }' },
+                { name: 'list_memories', params: 'agentId, limit?', returns: '{ memories: [{ memoryKey, cid, size }], total }' },
+                { name: 'delete_memory', params: 'agentId, memoryKey, confirm', returns: '{ deleted, agentId, memoryKey }' },
+              ]},
+              { group: 'Payments', color: 'text-[#ff6b8b]', tools: [
+                { name: 'prepare_storage', params: 'bytes, months?, confirmPaidOperation?', returns: '{ ready, costUsdfc, balanceBefore, allowanceSet, shortfall? }' },
+              ]},
+            ].map(({ group, color, tools: groupTools }) => (
+              <div key={group} className="mb-10">
+                <h4 className={`font-mono text-sm font-semibold ${color} mb-4 uppercase tracking-wider`}>{group}</h4>
+                <div className="space-y-3">
+                  {groupTools.map((t) => (
+                    <div key={t.name} className="rounded-lg border border-border bg-background p-4 md:p-5">
+                      <div className="flex flex-wrap items-baseline gap-2 mb-2">
+                        <code className="font-mono text-sm font-bold text-accent">{t.name}</code>
+                        <span className="text-xs text-muted-foreground">({t.params})</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-mono leading-relaxed">
+                        <span className="text-[#5b8dff]">→</span> {t.returns}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Memory Guide */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-2">Differential</h3>
+            <h2 className="font-serif text-3xl text-foreground mb-6">Agent Memory — Persist between sessions</h2>
+            <p className="mb-8 text-muted-foreground leading-7">
+              Fetcher gives AI agents structured, versioned memory on Filecoin. Nobody else has this. Each memory is stored as JSON, indexed locally, and retrievable across sessions with automatic TTL expiration.
+            </p>
+            <div className="grid gap-5 md:grid-cols-2">
+              {[
+                { title: 'Versioned', desc: 'Every store_memory increments the version counter. Detect conflicts and track changes over time.' },
+                { title: 'TTL-aware', desc: 'Set ttlDays to auto-expire memories. Expired memories return found: false on retrieval.' },
+                { title: 'Patch updates', desc: 'update_memory merges specific fields without replacing the whole object. Only changed keys are re-uploaded.' },
+                { title: 'Fallback values', desc: 'retrieve_memory accepts an optional fallback object — no need for null checks in agent logic.' },
+              ].map((item) => (
+                <div key={item.title} className="rounded-xl border border-border bg-background p-5">
+                  <h4 className="font-semibold text-foreground text-sm">{item.title}</h4>
+                  <p className="mt-2 text-sm text-muted-foreground leading-6">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 rounded-xl border border-border bg-[#05040b] p-5 md:p-7 overflow-x-auto">
+              <pre className="font-mono text-xs md:text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">
+{`<span class="text-muted-foreground">// Store memory</span>
+<span class="text-[#5b8dff]">await</span> fetcher.memory.store({
+  <span class="text-[#5b8dff]">agentId</span>: <span class="text-[#7bd4a8]">"my-assistant"</span>,
+  <span class="text-[#5b8dff]">memoryKey</span>: <span class="text-[#7bd4a8]">"preferences"</span>,
+  <span class="text-[#5b8dff]">data</span>: { <span class="text-[#5b8dff]">theme</span>: <span class="text-[#7bd4a8]">"dark"</span>, <span class="text-[#5b8dff]">lang</span>: <span class="text-[#7bd4a8]">"es"</span> },
+  <span class="text-[#5b8dff]">ttlDays</span>: <span class="text-[#ff6b8b]">30</span>
+});
+
+<span class="text-muted-foreground">// Retrieve next session</span>
+<span class="text-[#5b8dff]">const</span> mem = <span class="text-[#5b8dff]">await</span> fetcher.memory.retrieve({
+  <span class="text-[#5b8dff]">agentId</span>: <span class="text-[#7bd4a8]">"my-assistant"</span>,
+  <span class="text-[#5b8dff]">memoryKey</span>: <span class="text-[#7bd4a8]">"preferences"</span>,
+  <span class="text-[#5b8dff]">fallback</span>: { <span class="text-[#5b8dff]">theme</span>: <span class="text-[#7bd4a8]">"light"</span> }
+});
+<span class="text-muted-foreground">// → { found: true, data: { theme: "dark", lang: "es" }, version: 1 }</span>
+
+<span class="text-muted-foreground">// Update a single field</span>
+<span class="text-[#5b8dff]">await</span> fetcher.memory.update({
+  <span class="text-[#5b8dff]">agentId</span>: <span class="text-[#7bd4a8]">"my-assistant"</span>,
+  <span class="text-[#5b8dff]">memoryKey</span>: <span class="text-[#7bd4a8]">"preferences"</span>,
+  <span class="text-[#5b8dff]">patch</span>: { <span class="text-[#5b8dff]">theme</span>: <span class="text-[#7bd4a8]">"system"</span> }
+});
+<span class="text-muted-foreground">// → { cid, previousCid, updatedFields: ["theme"], version: 2 }</span>`}
+              </pre>
+            </div>
+          </motion.div>
+
+          {/* Safety */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-accent mb-2">Safety</h3>
+            <h2 className="font-serif text-3xl text-foreground mb-6">Security defaults</h2>
+            <p className="mb-6 text-muted-foreground leading-7">
+              AI agents are useful, but they shouldn't have unlimited spending power. Fetcher blocks paid operations by default.
+            </p>
+            <div className="overflow-hidden rounded-xl border border-border">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-card/50">
+                    <th className="px-5 py-3 font-medium text-foreground">Setting</th>
+                    <th className="px-5 py-3 font-medium text-foreground">Default</th>
+                    <th className="px-5 py-3 font-medium text-foreground hidden md:table-cell">Why</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {[
+                    ['Network', 'Calibration', 'Testnet first. Mainnet is an explicit decision.'],
+                    ['Paid operations', 'Disabled', 'Agents should not spend money without approval.'],
+                    ['Confirmation', 'Required', 'Every paid operation needs confirmPaidOperation: true'],
+                    ['Max bytes/call', '10 MiB', 'Prevents runaway storage costs from a single call.'],
+                    ['Min data size', '127 bytes', 'Filecoin protocol minimum enforced by Synapse.'],
+                  ].map(([setting, def, why]) => (
+                    <tr key={setting} className="bg-background">
+                      <td className="px-5 py-3 font-medium text-foreground">{setting}</td>
+                      <td className="px-5 py-3"><code className="rounded bg-accent-soft px-1.5 py-0.5 text-xs text-accent">{def}</code></td>
+                      <td className="px-5 py-3 text-muted-foreground hidden md:table-cell">{why}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {[
+                { emoji: '🔑', text: 'Never commit private keys. Use env vars or Grimoire for secret management.' },
+                { emoji: '🧪', text: 'Start on Calibration testnet. Enable mainnet only in controlled deployments.' },
+                { emoji: '💰', text: 'Use estimate_cost before uploading. Let the agent decide if it can afford storage.' },
+                { emoji: '📁', text: 'Prefer outputPath for large retrievals. Avoid printing huge byte arrays in agent context.' },
+              ].map((rule) => (
+                <div key={rule.text} className="rounded-lg border border-border bg-background p-4 flex gap-3 items-start">
+                  <span className="text-lg shrink-0">{rule.emoji}</span>
+                  <p className="text-sm text-muted-foreground leading-6">{rule.text}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Footer() {
   return (
     <footer id="docs" className="border-t-[0.5px] border-border bg-background px-8 py-12 md:px-28">
@@ -703,6 +979,7 @@ export default function App() {
       <IntegrationsSection />
       <TestimonialSection />
       <EcosystemSection />
+      <DocsSection />
       <Footer />
     </main>
   );
