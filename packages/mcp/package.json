@@ -1,0 +1,32 @@
+{
+  "name": "@filecoin-agent/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "filecoin-agent-mcp": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@filecoin-agent/core": "0.1.0",
+    "@modelcontextprotocol/server": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@filecoin-agent/testkit": "0.1.0",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}

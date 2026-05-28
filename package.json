@@ -17,8 +17,12 @@
     "preview": "npm --workspace apps/landing run preview"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server": "^2.0.0-alpha.2",
     "@types/node": "latest",
     "typescript": "latest",
     "vitest": "latest"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "^4.1.1"
   }
 }
