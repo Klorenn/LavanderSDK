@@ -11,3 +11,5 @@ coverage/
 tmp/
 temp/
 *.log
+CLAUDE.md
+ChatGPT Image*.png
