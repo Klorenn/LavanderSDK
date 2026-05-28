@@ -53,11 +53,11 @@ export class MemoryIndexBackend implements IndexBackend {
     );
     const previousCid = idx >= 0 ? this.memories[idx].cid : undefined;
     const version = idx >= 0 ? this.memories[idx].version + 1 : 1;
-    memory.version = version;
+    const stored = { ...memory, version };
     if (idx >= 0) {
-      this.memories[idx] = memory;
+      this.memories[idx] = stored;
     } else {
-      this.memories.push(memory);
+      this.memories.push(stored);
     }
     return { previousCid, version };
   }
@@ -80,8 +80,13 @@ export class MemoryIndexBackend implements IndexBackend {
   }
 
   async listMemories(agentId: string, limit = 50): Promise<MemoriesPage> {
+    const now = Date.now();
     const agentMems = this.memories
       .filter((m) => m.agentId === agentId)
+      .filter((m) => {
+        if (!m.ttlDays) return true;
+        return new Date(m.timestamp).getTime() + m.ttlDays * 86400000 > now;
+      })
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     return {
       memories: agentMems.slice(0, limit).map((m) => ({

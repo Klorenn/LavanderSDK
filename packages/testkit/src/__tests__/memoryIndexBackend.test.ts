@@ -75,4 +75,43 @@ describe("MemoryIndexBackend", () => {
     expect(stats.totalMemories).toBe(1);
     expect(stats.tagsUsed).toContain("report");
   });
+
+  it("does not mutate caller object in storeMemory", async () => {
+    const mem = { ...MEMORY };
+    const originalVersion = mem.version;
+    await idx.storeMemory(mem);
+    expect(mem.version).toBe(originalVersion); // caller's copy must not be mutated
+  });
+
+  it("getStats filters by agentId", async () => {
+    await idx.storeMemory({ ...MEMORY, agentId: "agent-1" });
+    await idx.storeMemory({ ...MEMORY, agentId: "agent-2", memoryKey: "other" });
+    const stats = await idx.getStats("agent-1");
+    expect(stats.totalMemories).toBe(1);
+  });
+
+  it("listFiles respects before cursor", async () => {
+    await idx.addFile({ ...FILE, cid: "old", timestamp: "2026-01-01T00:00:00.000Z" });
+    await idx.addFile({ ...FILE, cid: "new", timestamp: "2026-06-01T00:00:00.000Z" });
+    const page = await idx.listFiles({ before: "2026-03-01T00:00:00.000Z" });
+    expect(page.files).toHaveLength(1);
+    expect(page.files[0].cid).toBe("old");
+  });
+
+  it("listFiles respects limit and sets hasMore", async () => {
+    await idx.addFile({ ...FILE, cid: "a" });
+    await idx.addFile({ ...FILE, cid: "b" });
+    await idx.addFile({ ...FILE, cid: "c" });
+    const page = await idx.listFiles({ limit: 2 });
+    expect(page.files).toHaveLength(2);
+    expect(page.hasMore).toBe(true);
+  });
+
+  it("listMemories excludes TTL-expired entries", async () => {
+    const expired = { ...MEMORY, ttlDays: 1, timestamp: new Date(Date.now() - 2 * 86400000).toISOString() };
+    await idx.storeMemory(expired);
+    const result = await idx.listMemories("agent-1");
+    expect(result.total).toBe(0);
+    expect(result.memories).toHaveLength(0);
+  });
 });
