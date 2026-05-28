@@ -431,35 +431,39 @@ function WhySection() {
 }
 
 function ToolsSection() {
-  const groupColors: Record<string, string> = {
-    'Storage': 'text-[#5b8dff]', 'Verification': 'text-accent', 'Observability': 'text-[#7bd4a8]',
-    'Agent Memory': 'text-[#ffd166]', 'Payments': 'text-[#ff6b8b]',
-  };
-  const groupBorders: Record<string, string> = {
-    'Storage': 'border-l-[#5b8dff]/50', 'Verification': 'border-l-accent/50', 'Observability': 'border-l-[#7bd4a8]/50',
-    'Agent Memory': 'border-l-[#ffd166]/50', 'Payments': 'border-l-[#ff6b8b]/50',
+  const groupStyles: Record<string, { dot: string; border: string; text: string }> = {
+    'Storage':      { dot: 'bg-[#5b8dff]', border: 'border-[#5b8dff]/20 hover:border-[#5b8dff]/40', text: 'text-[#5b8dff]' },
+    'Verification': { dot: 'bg-accent',     border: 'border-accent/20 hover:border-accent/40',         text: 'text-accent' },
+    'Observability':{ dot: 'bg-[#7bd4a8]', border: 'border-[#7bd4a8]/20 hover:border-[#7bd4a8]/40', text: 'text-[#7bd4a8]' },
+    'Agent Memory': { dot: 'bg-[#ffd166]', border: 'border-[#ffd166]/20 hover:border-[#ffd166]/40', text: 'text-[#ffd166]' },
+    'Payments':     { dot: 'bg-[#ff6b8b]', border: 'border-[#ff6b8b]/20 hover:border-[#ff6b8b]/40', text: 'text-[#ff6b8b]' },
   };
 
   return (
     <section id="tools" className="px-8 py-24 md:px-28 md:py-32">
       <div className="mx-auto max-w-6xl">
         <SectionHeading label="API" title="17 tools. Five groups." subtitle="Available identically across MCP, LangChain, LlamaIndex, and SDK." />
-        <div className="space-y-10">
-          {allTools.map(({ group, tools: groupTools }) => (
-            <motion.div key={group} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }}>
-              <h3 className={`font-mono text-sm font-semibold ${groupColors[group]} mb-4 uppercase tracking-wider flex items-center gap-2`}>
-                <span className="h-2 w-2 rounded-full inline-block" style={{ backgroundColor: 'currentColor' }} />{group}
-              </h3>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {groupTools.map(t => (
-                  <div key={t.name} className={`rounded-lg border border-border bg-background p-4 border-l-2 ${groupBorders[group]} card-glow`}>
-                    <code className="font-mono text-sm font-bold text-accent">{t.name}</code>
-                    <p className="mt-2 text-xs text-muted-foreground leading-5">{t.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {allTools.map(({ group, tools: groupTools }, i) => {
+            const s = groupStyles[group];
+            return (
+              <motion.div key={group} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.08 }}
+                className={`rounded-xl border bg-background p-5 transition-all duration-300 ${s.border} card-glow`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`h-2 w-2 rounded-full ${s.dot}`} />
+                  <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-foreground">{group}</h3>
+                  <span className="ml-auto text-[10px] text-muted-foreground">{groupTools.length}</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {groupTools.map(t => (
+                    <code key={t.name} className="text-[10px] font-mono text-muted-foreground/80 leading-relaxed">
+                      {t.name}
+                    </code>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
