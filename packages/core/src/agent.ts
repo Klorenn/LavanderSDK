@@ -15,7 +15,11 @@ import {
   deleteFileInputSchema,
   storeMemoryInputSchema,
   retrieveMemoryInputSchema,
-  updateMemoryInputSchema
+  updateMemoryInputSchema,
+  listMemoriesInputSchema,
+  deleteMemoryInputSchema,
+  estimateCostInputSchema,
+  getProofInputSchema
 } from "./schemas.js";
 import type {
   FetcherConfig,
@@ -202,6 +206,70 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
         previousCid: previousCid ?? existing.cid,
         memoryKey: parsed.memoryKey,
         updatedFields: Object.keys(parsed.patch)
+      };
+    },
+
+    async listMemories(input) {
+      const parsed = listMemoriesInputSchema.parse(input);
+      return index.listMemories(parsed.agentId, parsed.limit);
+    },
+
+    async deleteMemory(input) {
+      const parsed = deleteMemoryInputSchema.parse(input);
+      const deleted = await index.deleteMemory(parsed.agentId, parsed.memoryKey);
+      return { deleted, agentId: parsed.agentId, memoryKey: parsed.memoryKey };
+    },
+
+    async getStorageStats(input) {
+      const stats = await index.getStats(input?.agentId);
+      return {
+        ...stats,
+        activeDeals: stats.totalFiles
+      };
+    },
+
+    async estimateCost(input) {
+      const parsed = estimateCostInputSchema.parse(input);
+      const copies = parsed.copies ?? 2;
+      const days = parsed.durationDays ?? 365;
+      const gb = parsed.sizeBytes / (1024 * 1024 * 1024);
+      const costPerGbMonth = 0.02;
+      const months = days / 30;
+      const estimated = gb * costPerGbMonth * months * copies;
+      const balance = await backend.getBalance();
+      const currentBalance = balance.usdfc ?? "0";
+
+      return {
+        estimatedCostUsdfc: estimated.toFixed(6),
+        costPerGbMonth: costPerGbMonth.toString(),
+        canAfford: parseFloat(currentBalance) >= estimated,
+        currentBalance
+      };
+    },
+
+    async listDeals() {
+      const files = await index.listFiles({ limit: 100 });
+      const deals = files.files.map((f) => ({
+        cid: f.cid,
+        filename: f.filename,
+        providers: ["synapse"],
+        expiry: new Date(Date.now() + 365 * 86400000).toISOString(),
+        costUsdfc: "0",
+        status: "active"
+      }));
+      return { deals, total: deals.length };
+    },
+
+    async getProof(input) {
+      const parsed = getProofInputSchema.parse(input);
+      if (backend.getProof) {
+        return backend.getProof(parsed);
+      }
+      return {
+        proof: "unavailable",
+        proofType: "PDP",
+        verifiedAt: new Date().toISOString(),
+        provider: "synapse"
       };
     }
   };

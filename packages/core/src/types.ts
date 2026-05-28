@@ -159,6 +159,89 @@ export type UpdateMemoryResult = {
   updatedFields: string[];
 };
 
+export type ListMemoriesInput = {
+  agentId: string;
+  limit?: number;
+};
+
+export type DeleteMemoryInput = {
+  agentId: string;
+  memoryKey: string;
+  confirm: true;
+};
+
+export type ListMemoriesResult = {
+  memories: Array<{
+    memoryKey: string;
+    cid: string;
+    timestamp: string;
+    size: number;
+  }>;
+  total: number;
+};
+
+export type DeleteMemoryResult = {
+  deleted: boolean;
+  agentId: string;
+  memoryKey: string;
+};
+
+export type GetStorageStatsInput = {
+  agentId?: string;
+};
+
+export type StorageStatsResult = {
+  totalFiles: number;
+  totalSizeBytes: number;
+  totalMemories: number;
+  activeDeals: number;
+  totalCostUsdfc?: string;
+  oldestFile?: string;
+  newestFile?: string;
+};
+
+export type EstimateCostInput = {
+  sizeBytes: number;
+  copies?: number;
+  durationDays?: number;
+};
+
+export type EstimateCostResult = {
+  estimatedCostUsdfc: string;
+  costPerGbMonth: string;
+  canAfford: boolean;
+  currentBalance?: string;
+};
+
+export type ListDealsInput = {
+  status?: "active" | "expired" | "all";
+  limit?: number;
+};
+
+export type ListDealsResult = {
+  deals: Array<{
+    cid: string;
+    filename: string;
+    providers: string[];
+    expiry: string;
+    costUsdfc: string;
+    status: string;
+  }>;
+  total: number;
+};
+
+export type GetProofInput = {
+  cid: string;
+};
+
+export type ProofResult = {
+  proof: string;
+  proofType: string;
+  verifiedAt: string;
+  provider: string;
+  blockNumber?: number;
+};
+
 export type BackendUploadOptions = {
   metadata?: Record<string, string>;
   copies?: number;
@@ -170,6 +253,7 @@ export interface StorageBackend {
   verify(input: VerifyInput): Promise<VerifyResult>;
   prepareStorage(input: PrepareStorageInput): Promise<PrepareStorageResult>;
   getBalance(): Promise<BalanceResult>;
+  getProof?(input: GetProofInput): Promise<ProofResult>;
 }
 
 export interface FetcherStorage {
@@ -183,4 +267,10 @@ export interface FetcherStorage {
   storeMemory(input: StoreMemoryInput): Promise<StoreMemoryResult>;
   retrieveMemory(input: RetrieveMemoryInput): Promise<RetrieveMemoryResult>;
   updateMemory(input: UpdateMemoryInput): Promise<UpdateMemoryResult>;
+  listMemories(input: ListMemoriesInput): Promise<ListMemoriesResult>;
+  deleteMemory(input: DeleteMemoryInput): Promise<DeleteMemoryResult>;
+  getStorageStats(input?: GetStorageStatsInput): Promise<StorageStatsResult>;
+  estimateCost(input: EstimateCostInput): Promise<EstimateCostResult>;
+  listDeals(input?: ListDealsInput): Promise<ListDealsResult>;
+  getProof(input: GetProofInput): Promise<ProofResult>;
 }

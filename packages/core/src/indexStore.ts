@@ -153,4 +153,71 @@ export class FetcherIndex {
     const { previousCid } = await this.storeMemory(existing);
     return { previousCid: previousCid ?? existing.cid, updatedFields };
   }
+
+  async listMemories(agentId: string, limit = 50): Promise<{
+    memories: Array<{ memoryKey: string; cid: string; timestamp: string; size: number }>;
+    total: number;
+  }> {
+    await this.ensureLoaded();
+    const agentMemories = this.data.memories
+      .filter((m) => m.agentId === agentId)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    const total = agentMemories.length;
+    const sliced = agentMemories.slice(0, limit);
+
+    return {
+      memories: sliced.map((m) => ({
+        memoryKey: m.memoryKey,
+        cid: m.cid,
+        timestamp: m.timestamp,
+        size: JSON.stringify(m.data).length
+      })),
+      total
+    };
+  }
+
+  async deleteMemory(agentId: string, memoryKey: string): Promise<boolean> {
+    await this.ensureLoaded();
+    const idx = this.data.memories.findIndex(
+      (m) => m.agentId === agentId && m.memoryKey === memoryKey
+    );
+    if (idx < 0) return false;
+    this.data.memories.splice(idx, 1);
+    await this.persist();
+    return true;
+  }
+
+  async getStats(agentId?: string): Promise<{
+    totalFiles: number;
+    totalSizeBytes: number;
+    totalMemories: number;
+    oldestFile?: string;
+    newestFile?: string;
+  }> {
+    await this.ensureLoaded();
+    const files = agentId ? this.data.files : this.data.files;
+    const memories = agentId ? this.data.memories.filter((m) => m.agentId === agentId) : this.data.memories;
+
+    let totalSizeBytes = 0;
+    let oldestFile: string | undefined;
+    let newestFile: string | undefined;
+
+    if (files.length > 0) {
+      const sorted = [...files].sort(
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+      oldestFile = sorted[0].timestamp;
+      newestFile = sorted[sorted.length - 1].timestamp;
+      totalSizeBytes = files.reduce((s, f) => s + f.size, 0);
+    }
+
+    return {
+      totalFiles: files.length,
+      totalSizeBytes,
+      totalMemories: memories.length,
+      oldestFile,
+      newestFile
+    };
+  }
 }

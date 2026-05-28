@@ -10,17 +10,10 @@ describe("createFetcherTools", () => {
     });
 
     expect(tools.map((tool) => tool.name)).toEqual([
-      "store_file",
-      "retrieve_file",
-      "list_files",
-      "verify_cid",
-      "check_deal",
-      "prepare_storage",
-      "delete_file",
-      "balance",
-      "store_memory",
-      "retrieve_memory",
-      "update_memory"
+      "store_file", "retrieve_file", "list_files", "verify_cid", "check_deal",
+      "get_proof", "prepare_storage", "delete_file", "get_balance", "estimate_cost",
+      "get_storage_stats", "list_deals", "store_memory", "retrieve_memory",
+      "update_memory", "list_memories", "delete_memory"
     ]);
   });
 

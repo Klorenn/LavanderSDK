@@ -66,3 +66,33 @@ export const updateMemoryInputSchema = z.object({
   patch: z.record(z.string(), z.unknown()),
   confirmPaidOperation: z.boolean().optional()
 });
+
+export const listMemoriesInputSchema = z.object({
+  agentId: z.string().min(1).max(64),
+  limit: z.number().int().min(1).max(100).optional()
+});
+
+export const deleteMemoryInputSchema = z.object({
+  agentId: z.string().min(1).max(64),
+  memoryKey: z.string().min(1).max(128),
+  confirm: z.literal(true)
+});
+
+export const getStorageStatsInputSchema = z.object({
+  agentId: z.string().min(1).max(64).optional()
+}).optional();
+
+export const estimateCostInputSchema = z.object({
+  sizeBytes: z.number().int().positive(),
+  copies: z.number().int().min(1).max(10).optional(),
+  durationDays: z.number().int().min(1).max(3650).optional()
+});
+
+export const listDealsInputSchema = z.object({
+  status: z.enum(["active", "expired", "all"]).optional(),
+  limit: z.number().int().min(1).max(100).optional()
+}).optional();
+
+export const getProofInputSchema = z.object({
+  cid: cidSchema
+});
