@@ -8,8 +8,8 @@ describe("createFetcherAgent — store/retrieve/verify", () => {
   it("stores content and returns a CID with filename", async () => {
     const agent = createFetcherAgent({
       backend: createFakeStorageBackend(),
+      indexBackend: new MemoryIndexBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
-      indexDir: "/tmp/fetcher-test-agent"
     });
 
     const result = await agent.storeFile({ content: CONTENT, filename: "hello.txt" });
@@ -22,8 +22,8 @@ describe("createFetcherAgent — store/retrieve/verify", () => {
   it("retrieves bytes by CID", async () => {
     const agent = createFetcherAgent({
       backend: createFakeStorageBackend(),
+      indexBackend: new MemoryIndexBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
-      indexDir: "/tmp/fetcher-test-agent"
     });
 
     await agent.storeFile({ content: CONTENT, filename: "test.txt" });
@@ -35,8 +35,8 @@ describe("createFetcherAgent — store/retrieve/verify", () => {
   it("verifies stored data", async () => {
     const agent = createFetcherAgent({
       backend: createFakeStorageBackend(),
+      indexBackend: new MemoryIndexBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
-      indexDir: "/tmp/fetcher-test-agent"
     });
 
     await agent.storeFile({ content: CONTENT, filename: "verify.txt" });

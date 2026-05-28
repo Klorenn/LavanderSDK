@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createFetcherAgent } from "../agent.js";
 import { FetcherError } from "../errors.js";
+import { MemoryIndexBackend } from "@fetcher-fil/testkit";
 import type { StorageBackend } from "../types.js";
 
 const backend: StorageBackend = {
@@ -17,13 +18,13 @@ const LONG_TEXT = "This is a test string that needs to be at least 127 bytes lon
 
 describe("spending policy", () => {
   it("blocks paid store operations by default", async () => {
-    const agent = createFetcherAgent({ backend, indexDir: "/tmp/fetcher-test-policy" });
+    const agent = createFetcherAgent({ backend, indexBackend: new MemoryIndexBackend() });
     await expect(agent.storeFile({ content: LONG_TEXT, filename: "test.txt" })).rejects.toMatchObject({ code: "SPENDING_POLICY_BLOCKED" });
   });
 
   it("requires explicit confirmation when configured", async () => {
     const agent = createFetcherAgent({
-      backend, indexDir: "/tmp/fetcher-test-policy",
+      backend, indexBackend: new MemoryIndexBackend(),
       spendingPolicy: { allowPaidOperations: true, requireConfirmation: true }
     });
     await expect(agent.storeFile({ content: LONG_TEXT, filename: "test.txt" })).rejects.toBeInstanceOf(FetcherError);
