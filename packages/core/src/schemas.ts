@@ -9,7 +9,7 @@ const metadataSchema = z
 
 export const storeFileInputSchema = z.object({
   content: z.string().min(1).optional(),
-  data: z.instanceof(Uint8Array).optional(),
+  data: z.any().optional(),
   filename: z.string().min(1),
   mimeType: z.string().optional(),
   tags: z.array(z.string().min(1).max(32)).max(10).optional(),
