@@ -13,7 +13,7 @@ describe('Fetcher landing', () => {
     expect(screen.getByRole('heading', { name: 'check_deal' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'list_files' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'verify_cid' })).toBeInTheDocument();
-    expect(screen.getByText(/Alex Chen/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ghost/i)).toBeInTheDocument();
     expect(screen.getByText(/The keeper of secrets/i)).toBeInTheDocument();
     expect(screen.getByText(/The spirit messenger/i)).toBeInTheDocument();
   });

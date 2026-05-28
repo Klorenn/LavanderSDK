@@ -30,7 +30,7 @@ const tickerItems = [
 const groups = ['Storage', 'Verify', 'Observe', 'Memory', 'Payments'] as const;
 
 const quote =
-  "Fetcher changed how our agents handle data. We went from losing everything between sessions to having a persistent, verifiable memory on Filecoin. It just works — and that's rare in Web3.";
+  "17 tools, four frameworks, one npm install. Fetcher is the missing bridge between AI agents and Filecoin Onchain Cloud. We shipped an MCP server in two hours — the rest of the week was just playing with it.";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -611,10 +611,10 @@ function TestimonialSection() {
           transition={{ duration: 0.5 }}
           className="mt-12 flex items-center gap-4"
         >
-          <div className="h-12 w-12 rounded-full bg-[radial-gradient(circle_at_35%_25%,#f2eff8,#a87dd4_48%,#322148_100%)]" />
+          <img src="/fetcher-icon.png" alt="" className="h-12 w-12 rounded-full object-cover shadow-[0_0_20px_rgba(168,125,212,0.35)]" />
           <div>
-            <p className="font-semibold text-foreground">Alex Chen</p>
-            <p className="text-sm text-muted-foreground">AI Engineer at Latitude</p>
+            <p className="font-semibold text-foreground">Ghost</p>
+            <p className="text-sm text-muted-foreground">Filecoin ProPGF Batch 3</p>
           </div>
         </motion.div>
       </div>
