@@ -5,7 +5,8 @@ export type FetcherErrorCode =
   | "BACKEND_ERROR"
   | "FILESYSTEM_ERROR"
   | "NOT_FOUND"
-  | "SIZE_TOO_SMALL";
+  | "SIZE_TOO_SMALL"
+  | "NOT_SUPPORTED";
 
 export class FetcherError extends Error {
   readonly code: FetcherErrorCode;

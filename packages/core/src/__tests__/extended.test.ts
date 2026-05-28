@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFetcherAgent } from "../agent.js";
-import { createFakeStorageBackend, TEST_CID } from "@fetcher-fil/testkit";
+import { createFakeStorageBackend, MemoryIndexBackend, TEST_CID } from "@fetcher-fil/testkit";
 import { FetcherError } from "../errors.js";
 
 const LONG_TEXT = "This is test content that needs to be at least 127 bytes long to pass the Filecoin minimum size requirement enforced at the SDK layer.";
@@ -8,8 +8,8 @@ const LONG_TEXT = "This is test content that needs to be at least 127 bytes long
 function createAgent(overrides = {}) {
   return createFetcherAgent({
     backend: createFakeStorageBackend(),
+    indexBackend: new MemoryIndexBackend(),
     spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
-    indexDir: "/tmp/fetcher-test-extended",
     ...overrides
   });
 }
@@ -108,6 +108,65 @@ describe("extended agent operations", () => {
         patch: { x: 1 },
         confirmPaidOperation: true
       })).rejects.toBeInstanceOf(FetcherError);
+    });
+  });
+
+  describe("checkDeal", () => {
+    it("returns dealActive based on real verify, not fake expiry", async () => {
+      const agent = createAgent();
+      await agent.storeFile({ content: LONG_TEXT, filename: "deal.txt" });
+      const result = await agent.checkDeal({ cid: TEST_CID });
+      expect(result.dealActive).toBe(true);
+      expect(result.expiryDate).toBeNull();
+    });
+  });
+
+  describe("getProof", () => {
+    it("throws NOT_SUPPORTED when backend has no getProof", async () => {
+      const agent = createAgent();
+      await expect(agent.getProof({ cid: TEST_CID })).rejects.toMatchObject({
+        code: "NOT_SUPPORTED",
+      });
+    });
+
+    it("returns proof when backend supports it", async () => {
+      const backendWithProof = {
+        ...createFakeStorageBackend(),
+        async getProof() {
+          return { proof: "abc123", proofType: "PDP", verifiedAt: new Date().toISOString(), provider: "synapse" };
+        },
+      };
+      const agent = createFetcherAgent({
+        backend: backendWithProof,
+        indexBackend: new MemoryIndexBackend(),
+        spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
+      });
+      const result = await agent.getProof({ cid: TEST_CID });
+      expect(result.proof).toBe("abc123");
+    });
+  });
+
+  describe("estimateCost", () => {
+    it("returns priceSource=estimated when backend has no getPricing", async () => {
+      const agent = createAgent();
+      const result = await agent.estimateCost({ sizeBytes: 1024 * 1024 });
+      expect(result.priceSource).toBe("estimated");
+      expect(result.priceAsOf).toBeTruthy();
+    });
+
+    it("returns priceSource=live when backend provides pricing", async () => {
+      const backendWithPricing = {
+        ...createFakeStorageBackend(),
+        async getPricing() { return { costPerGbMonth: "0.015" }; },
+      };
+      const agent = createFetcherAgent({
+        backend: backendWithPricing,
+        indexBackend: new MemoryIndexBackend(),
+        spendingPolicy: { allowPaidOperations: true, requireConfirmation: false },
+      });
+      const result = await agent.estimateCost({ sizeBytes: 1024 * 1024 * 1024 });
+      expect(result.priceSource).toBe("live");
+      expect(result.costPerGbMonth).toBe("0.015");
     });
   });
 });

@@ -110,10 +110,15 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
     async checkDeal(input) {
       const parsed = verifyInputSchema.parse(input);
       const result = await backend.verify(parsed);
+
+      const expiryDate = backend.getDealExpiry
+        ? await backend.getDealExpiry(parsed.cid)
+        : null;
+
       return {
         dealActive: result.verified,
         providers: result.evidence.map((e) => e.detail).filter(Boolean),
-        expiryDate: new Date(Date.now() + 365 * 86400000).toISOString(),
+        expiryDate,
         redundancy: result.copies,
         lastProofTimestamp: result.checkedAt,
         nextProofDue: new Date(Date.now() + 3600000).toISOString()
@@ -300,9 +305,23 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
       const copies = parsed.copies ?? 2;
       const days = parsed.durationDays ?? 365;
       const gb = parsed.sizeBytes / (1024 * 1024 * 1024);
-      const costPerGbMonth = 0.02;
       const months = days / 30;
-      const storageCost = gb * costPerGbMonth * months * copies;
+      const priceAsOf = new Date().toISOString();
+
+      let costPerGbMonthRaw = 0.02;
+      let priceSource: "live" | "estimated" = "estimated";
+
+      if (backend.getPricing) {
+        try {
+          const pricing = await backend.getPricing();
+          costPerGbMonthRaw = parseFloat(pricing.costPerGbMonth);
+          priceSource = "live";
+        } catch {
+          // fall through to estimated
+        }
+      }
+
+      const storageCost = gb * costPerGbMonthRaw * months * copies;
       const retrievalCost = storageCost * 0.1;
       const providerFee = storageCost * 0.05;
       const estimated = storageCost + retrievalCost + providerFee;
@@ -311,9 +330,11 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
 
       return {
         estimatedCostUsdfc: estimated.toFixed(6),
-        costPerGbMonth: costPerGbMonth.toString(),
+        costPerGbMonth: costPerGbMonthRaw.toString(),
         currentBalance,
         canAfford: parseFloat(currentBalance) >= estimated,
+        priceSource,
+        priceAsOf,
         breakdown: {
           storageCost: storageCost.toFixed(6),
           retrievalCost: retrievalCost.toFixed(6),
@@ -324,28 +345,46 @@ export function createFetcherAgent(config: FetcherConfig): FetcherStorage {
 
     async listDeals() {
       const files = await index.listFiles({ limit: 100 });
-      const deals = files.files.map((f) => ({
-        cid: f.cid,
-        filename: f.filename,
-        providers: ["synapse"],
-        expiry: new Date(Date.now() + 365 * 86400000).toISOString(),
-        costUsdfc: "0",
-        status: "active"
-      }));
+      const VERIFY_LIMIT = 20;
+
+      const deals = await Promise.all(
+        files.files.map(async (f, i) => {
+          if (i < VERIFY_LIMIT) {
+            const verifyResult = await backend.verify({ cid: f.cid });
+            return {
+              cid: f.cid,
+              filename: f.filename,
+              providers: verifyResult.evidence.map((e) => e.detail).filter(Boolean),
+              expiry: null as string | null,
+              costUsdfc: "0",
+              status: verifyResult.verified ? "active" : "missing",
+              verified: true,
+            };
+          }
+          return {
+            cid: f.cid,
+            filename: f.filename,
+            providers: [] as string[],
+            expiry: null as string | null,
+            costUsdfc: "0",
+            status: "unverified",
+            verified: false,
+          };
+        })
+      );
+
       return { deals, total: deals.length };
     },
 
     async getProof(input) {
       const parsed = getProofInputSchema.parse(input);
-      if (backend.getProof) {
-        return backend.getProof(parsed);
+      if (!backend.getProof) {
+        throw new FetcherError(
+          "NOT_SUPPORTED",
+          "getProof is not supported by the configured storage backend."
+        );
       }
-      return {
-        proof: "unavailable",
-        proofType: "PDP",
-        verifiedAt: new Date().toISOString(),
-        provider: "synapse"
-      };
+      return backend.getProof(parsed);
     }
   };
 }

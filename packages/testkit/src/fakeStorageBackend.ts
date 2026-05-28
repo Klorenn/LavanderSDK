@@ -57,6 +57,10 @@ export function createFakeStorageBackend(options: FakeStorageBackendOptions = {}
 
     async getBalance(): Promise<BalanceResult> {
       return { balanceUsdfc: "100", balanceFil: "1", pendingPayments: "5", availableUsdfc: "95" };
+    },
+
+    async getDealExpiry(_cid: string): Promise<string | null> {
+      return null;
     }
   };
 }

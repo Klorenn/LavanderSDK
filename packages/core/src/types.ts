@@ -230,6 +230,8 @@ export type EstimateCostResult = {
   costPerGbMonth: string;
   currentBalance: string;
   canAfford: boolean;
+  priceSource: "live" | "estimated";
+  priceAsOf: string;
   breakdown: {
     storageCost: string;
     retrievalCost: string;
@@ -247,9 +249,10 @@ export type ListDealsResult = {
     cid: string;
     filename: string;
     providers: string[];
-    expiry: string;
+    expiry: string | null;
     costUsdfc: string;
     status: string;
+    verified: boolean;
   }>;
   total: number;
 };
@@ -269,7 +272,7 @@ export type ProofResult = {
 export type DealResult = {
   dealActive: boolean;
   providers: string[];
-  expiryDate: string;
+  expiryDate: string | null;
   redundancy: number;
   lastProofTimestamp: string;
   nextProofDue: string;
@@ -287,6 +290,8 @@ export interface StorageBackend {
   prepareStorage(input: PrepareStorageInput): Promise<PrepareStorageResult>;
   getBalance(): Promise<BalanceResult>;
   getProof?(input: GetProofInput): Promise<ProofResult>;
+  getDealExpiry?(cid: string): Promise<string | null>;
+  getPricing?(): Promise<{ costPerGbMonth: string }>;
 }
 
 export interface FetcherStorage {
