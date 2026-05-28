@@ -111,7 +111,7 @@ const allTools = [
 ];
 
 const reasons = [
-  { title: 'MCP Native', desc: 'Connect Claude Desktop in one config line. Zero code. The agent sees all 17 tools automatically.' },
+  { title: 'MCP Native', desc: 'Works with any MCP client — Claude, Cursor, Continue, Cody, and more. 17 tools appear automatically.' },
   { title: 'Agent Memory', desc: 'Structured, versioned, TTL-aware memory that persists between sessions. Nobody else has this.' },
   { title: 'Safe by Default', desc: 'Paid operations blocked. Calibration testnet first. Explicit confirmation required for every spend.' },
   { title: 'PDP Verified', desc: 'Every file is cryptographically verified every hour via Filecoin Onchain Cloud PDP proofs.' },
@@ -133,7 +133,7 @@ const navLinks = ['Why', 'Tools', 'Pricing', 'Docs'];
 
 function useHash() {
   return useSyncExternalStore(
-    () => { const h = () => {}; window.addEventListener('hashchange', h); return () => window.removeEventListener('hashchange', h); },
+    (callback) => { window.addEventListener('hashchange', callback); return () => window.removeEventListener('hashchange', callback); },
     () => window.location.hash
   );
 }
@@ -206,29 +206,33 @@ function CodeBlock({ code, language, filename }: { code: string; language: strin
 
 /* ── Terminal component ──────────────────────────────────── */
 
-const asciiArt = `   /|、
-  (˚ˎ 。7  
-   |、˜〵  
-  じしˍ,)ノ`;
+const asciiLines = [
+  '            /|、',
+  '           (˚ˎ 。7',
+  '            |、˜〵',
+  '           じしˍ,)ノ',
+];
 
 const terminalLines = [
-  { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/90', delay: 0.6 },
-  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.9 },
-  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 1.1 },
-  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 1.3 },
-  { text: '', color: '', delay: 1.6 },
-  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.9 },
-  { text: '', color: '', delay: 2.3 },
-  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 2.5 },
-  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.8 },
+  { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/80', delay: 0.3 },
+  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.5 },
+  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 0.7 },
+  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 0.9 },
+  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.4 },
+  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 1.8 },
+  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.0 },
 ];
+
+const DAEMON_START_LINE = 4;
+const DAEMON_END_LINE = 6;
 
 function Terminal() {
   const [visibleLines, setVisibleLines] = useState(0);
   const [started, setStarted] = useState(false);
+  const [daemonProgress, setDaemonProgress] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => setStarted(true), 600);
+    const timer = setTimeout(() => setStarted(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -240,31 +244,35 @@ function Terminal() {
     return () => clearTimeout(timer);
   }, [started, visibleLines]);
 
+  useEffect(() => {
+    if (visibleLines >= DAEMON_START_LINE && daemonProgress < asciiLines.length) {
+      const timer = setTimeout(() => setDaemonProgress(p => p + 1), 180);
+      return () => clearTimeout(timer);
+    }
+  }, [visibleLines, daemonProgress]);
+
+  const daemonOpacity = Math.min(1, (visibleLines - DAEMON_START_LINE) / (DAEMON_END_LINE - DAEMON_START_LINE));
+
   return (
-    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex">
-      <div className="w-[45%] hidden md:flex items-center justify-center border-r border-white/5 p-6">
-        <pre className="font-mono text-accent/70 whitespace-pre leading-[1.08] text-[16px] md:text-[22px]">
-          {asciiArt}
-        </pre>
+    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex flex-col">
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 shrink-0">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
+        <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher ~ terminal</span>
       </div>
-      <div className="flex-1 flex flex-col p-4 md:p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
-          <span className="ml-3 text-[10px] text-muted-foreground font-mono">fetcher ~ terminal</span>
-        </div>
-        <div className="flex-1 space-y-1 font-mono overflow-hidden">
+      <div className="flex-1 flex flex-col-reverse md:flex-row items-center justify-center gap-3 md:gap-8 p-4 md:p-6">
+        <div className="flex-1 space-y-1 font-mono min-w-0">
           {terminalLines.slice(0, visibleLines).map((line, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, x: -4 }}
+              initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`text-[12px] md:text-sm ${line.color} leading-relaxed`}
+              transition={{ duration: 0.3 }}
+              className={`text-[11px] md:text-sm ${line.color} leading-relaxed`}
             >
-              {line.text || '\u00A0'}
-              {i === visibleLines - 1 && i >= 4 && (
+              {line.text}
+              {i === visibleLines - 1 && i >= 3 && (
                 <motion.span
                   animate={{ opacity: [1, 0] }}
                   transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
@@ -273,6 +281,15 @@ function Terminal() {
               )}
             </motion.div>
           ))}
+        </div>
+        <div className="shrink-0 flex items-center" style={{ opacity: daemonOpacity, transition: 'opacity 0.5s ease-out' }}>
+          <pre className="font-mono text-accent/80 whitespace-pre leading-[1.05] text-[28px] md:text-[44px] select-none">
+            {asciiLines.map((line, i) => (
+              <div key={i}>
+                {i < daemonProgress ? line : ' '.repeat(line.length)}
+              </div>
+            ))}
+          </pre>
         </div>
       </div>
     </div>
@@ -290,7 +307,7 @@ function Hero() {
 
   return (
     <section ref={heroRef} className="relative min-h-screen overflow-hidden bg-background">
-      <video src="/fetcher-lavender.mp4" poster="/fetcher-lavender-frame1.png" autoPlay muted playsInline className="absolute inset-0 h-full w-full object-cover" />
+      <video src="/fetcher-lavender.mp4" poster="/fetcher-lavender-frame1.png" autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(168,125,212,0.12),transparent_38%),linear-gradient(180deg,rgba(7,6,16,0.26),rgba(7,6,16,0.08)_45%,rgba(7,6,16,0.72))]" />
 
       <nav className="relative z-40 flex items-center justify-between px-8 py-4 md:px-28">
@@ -328,7 +345,7 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          {['MIT License', 'ProPGF Batch 3', 'Open Source', 'TypeScript'].map(s => <span key={s} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}</span>)}
+          {['MIT License · by Kl0ren', '2026', 'ProPGF Batch 3', 'Open Source'].map(s => <span key={s} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}</span>)}
         </motion.div>
       </motion.div>
 
@@ -468,7 +485,7 @@ function ToolsSection() {
 
 function IntegrationsSection() {
   const cards = [
-    { title: 'MCP Server', desc: 'Claude Desktop in one config line. Zero code. 17 tools appear automatically in the agent context.', gradient: 'from-accent/20 to-accent/5' },
+    { title: 'MCP Server', desc: 'Works with any MCP client — Claude, Cursor, Continue, Cody. 17 tools appear automatically in any LLM.', gradient: 'from-accent/20 to-accent/5' },
     { title: 'LangChain Toolkit', desc: 'FetcherToolkit with 17 DynamicStructuredTools. Native ReAct agent support. Full type safety.', gradient: 'from-[#5b8dff]/20 to-[#5b8dff]/5' },
     { title: 'LlamaIndex Tools', desc: '17 FunctionTools for OpenAIAgent. Full JSON Schema support. Compatible with any LlamaIndex agent.', gradient: 'from-accent/20 to-[#a87dd4]/5' },
     { title: 'SDK Direct', desc: 'Fetcher class with fluent API: fetcher.store(), fetcher.memory.store(), fetcher.stats().', gradient: 'from-[#7bd4a8]/20 to-[#7bd4a8]/5' },
@@ -629,7 +646,7 @@ function OverviewDoc() {
         <p>AI agents today have <span className="text-accent font-semibold">five critical gaps</span> that no other SDK addresses simultaneously:</p>
         <div className="grid gap-3 not-prose">
           {[
-            { gap: 'No Filecoin MCP Server', fix: 'Add one JSON block to Claude Desktop — 17 tools appear automatically.' },
+            { gap: 'No Filecoin MCP Server', fix: 'Add one JSON block to any MCP client — 17 Filecoin tools appear automatically.' },
             { gap: 'No LangChain Toolkit for Filecoin', fix: 'createFetcherTools() returns 17 native DynamicStructuredTools.' },
             { gap: 'No LlamaIndex Tools for Filecoin', fix: 'createFetcherTools() returns 17 native FunctionTools with JSON Schema.' },
             { gap: 'No persistent agent memory', fix: 'Structured, versioned, TTL-aware memory that persists between sessions.' },
@@ -669,7 +686,7 @@ function QuickstartDoc() {
         <div className="grid gap-4 md:grid-cols-2 not-prose">
           {[
             { step: '1', title: 'Get a wallet', desc: 'Add Filecoin Calibration to MetaMask. RPC: api.calibration.node.glif.io/rpc/v1, Chain ID: 314159. Get test FIL from faucet.calibration.fildev.network.' },
-            { step: '2', title: 'Install', desc: 'npm install @fetcher-fil/core. Add your adapter: @fetcher-fil/mcp for Claude Desktop, @fetcher-fil/langchain for LangChain, or @fetcher-fil/llamaindex.' },
+            { step: '2', title: 'Install', desc: 'npm install @fetcher-fil/core. Add your adapter: @fetcher-fil/mcp for MCP clients (Claude, Cursor, Continue...), @fetcher-fil/langchain, or @fetcher-fil/llamaindex.' },
             { step: '3', title: 'Configure', desc: 'Set FILECOIN_PRIVATE_KEY env var. Start on Calibration testnet. Enable FILECOIN_AGENT_ALLOW_PAID=true when ready.' },
             { step: '4', title: 'Use it', desc: 'MCP: add JSON config. Code: createFetcherTools({ backend, spendingPolicy }). Your agent has 17 tools.' },
           ].map(s => (
@@ -692,8 +709,8 @@ function QuickstartDoc() {
 function McpDoc() {
   return (
     <DocSection>
-      <DocBlock title="Claude Desktop Configuration">
-        <p>Add this JSON block to your Claude Desktop config file. Restart Claude. Your agent now has 17 Filecoin tools available in every conversation.</p>
+      <DocBlock title="MCP Client Configuration">
+        <p>Add this JSON block to your MCP client config — Claude Desktop, Cursor, Continue, Cody, or any MCP-compatible host. Restart the client. Your LLM now has 17 Filecoin tools.</p>
         <div className="not-prose mt-4">
           <CodeBlock code={codeSnippets.mcp} language="JSON" filename="claude_desktop_config.json" />
         </div>
@@ -1027,7 +1044,7 @@ function Footer() {
           </div>
         </div>
         <div className="mt-10 pt-6 border-t border-border flex flex-wrap items-center justify-between text-xs text-muted-foreground gap-4">
-          <span>MIT License · Open Source</span>
+          <span>MIT License · Developed by <a href="https://github.com/Klorenn" target="_blank" rel="noopener" className="text-accent hover:text-accent/80 transition">Kl0ren</a> · 2026</span>
           <span>Built for the Filecoin ecosystem</span>
         </div>
       </div>
