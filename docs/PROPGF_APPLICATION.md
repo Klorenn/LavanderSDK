@@ -167,22 +167,24 @@ Fetcher → AI developers install SDK (output) → AI agents store data on Filec
 
 ### 4.1 Monthly Operating Burn
 
-**[tu selección: < $10K / $10-$100K / $100-$1M / $1M+]**
+**< $10K (basic solo operation or part-time team)**
 
 ### 4.2 What % of total team monthly burn depends on this grant?
 
-**[tu porcentaje]**
+**100%** — This is a solo-developer project. The grant directly funds dedicated development time. Without it, all work happens on nights and weekends with no dedicated allocation.
 
 ### 4.3 If this grant is not awarded, what happens?
 
-The SDK is already built and open-source. Without funding, development velocity slows — I continue maintaining it part-time. Features like Python SDK, payment rails, and dashboard UI are deprioritized. The core TypeScript SDK remains available but without dedicated support, documentation updates, or community growth efforts. The opportunity cost is high: the AI agent ecosystem is moving fast, and without dedicated resources, Filecoin risks losing this integration window to centralized alternatives.
+The SDK is already built and functional as open-source software. Without funding, development continues at a significantly slower pace — nights and weekends only. The npm publication, documentation site maintenance, community support, and the planned Python SDK are deprioritized indefinitely. The core TypeScript SDK remains available on GitHub under MIT license for anyone to use or fork, but without dedicated time for community growth, onboarding support, or responding to Synapse SDK updates. The risk is that the AI agent ecosystem moves fast — LangChain and MCP are growing exponentially — and without dedicated resources, Filecoin misses the window to establish itself as the default storage backend for AI agents before centralized alternatives capture the market.
 
 ### 4.4 Core Team
 
-**[tu nombre]** — Lead Developer
-- Built the entire Fetcher SDK (55+ commits, 7 packages, 75 tests)
-- Full-stack TypeScript, Synapse SDK integration, MCP protocol, React/Vite landing page
-- [tu experiencia relevante]
+**Kl0ren** — Lead Developer & Sole Contributor
+- Built the entire Fetcher SDK: 55+ commits, 7 packages, 75 tests, full documentation site
+- Full-stack TypeScript: React, Vite, Tailwind, Framer Motion, Node.js
+- Synapse SDK integration, MCP protocol implementation, LangChain/LlamaIndex tool development
+- Filecoin Calibration testnet validation with real on-chain transactions
+- Open-source maintainer with published projects on GitHub
 
 ### 4.5 Has your team received a ProPGF grant or funding from PLFIF before?
 
