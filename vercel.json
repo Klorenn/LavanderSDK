@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm install && npm --workspace apps/landing run build",
+  "buildCommand": "cd apps/landing && npm install && npm run build",
   "outputDirectory": "apps/landing/dist",
-  "installCommand": "npm install",
-  "framework": "vite"
+  "framework": "vite",
+  "installCommand": "npm install"
 }
