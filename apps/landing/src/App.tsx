@@ -366,7 +366,7 @@ function CodeDemo() {
   }, []);
 
   const code = codeSnippets[tab];
-  const filename = tab === 'mcp' ? '~/.config/claude/claude_desktop_config.json' : tab === 'langchain' ? 'src/agent.ts' : tab === 'llamaindex' ? 'src/agent.ts' : 'src/index.ts';
+  const filename = tab === 'mcp' ? 'mcp-config.json' : tab === 'langchain' ? 'src/agent.ts' : tab === 'llamaindex' ? 'src/agent.ts' : 'src/index.ts';
   const lang = tab === 'mcp' ? 'JSON' : 'TypeScript';
 
   return (
@@ -695,7 +695,7 @@ function McpDoc() {
       <DocBlock title="MCP Client Configuration">
         <p>Add this JSON block to your MCP client config — Claude Desktop, Cursor, Continue, Cody, or any MCP-compatible host. Restart the client. Your LLM now has 17 Filecoin tools.</p>
         <div className="not-prose mt-4">
-          <CodeBlock code={codeSnippets.mcp} language="JSON" filename="claude_desktop_config.json" />
+          <CodeBlock code={codeSnippets.mcp} language="JSON" filename="mcp-config.json" />
         </div>
       </DocBlock>
 
