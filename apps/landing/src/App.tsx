@@ -255,14 +255,14 @@ function Terminal() {
         <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
         <span className="ml-3 text-[10px] text-muted-foreground font-mono tracking-wider">fetcher — zsh</span>
       </div>
-      <div className="flex-1 p-4 md:p-6 space-y-0.5 font-mono overflow-hidden">
+      <div className="flex-1 p-4 md:p-6 space-y-0.5 font-mono overflow-y-auto">
         {terminalLines.slice(0, visibleLines).map((line, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, x: -4 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.25 }}
-            className={`text-[11px] md:text-[13px] ${line.color} leading-relaxed`}
+            className={`text-[10px] md:text-[12px] ${line.color} leading-relaxed`}
           >
             {line.text || '\u00A0'}
             {i === visibleLines - 1 && !allDone && i >= 1 && (
@@ -327,12 +327,15 @@ function Hero() {
           <button onClick={() => navigate('#docs')} className="rounded-full border border-border px-8 py-3.5 text-base font-medium text-foreground hover:border-accent/50 transition">Read Docs</button>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-          {['MIT License · by Kl0ren', '2026', 'ProPGF Batch 3', 'Open Source'].map(s => <span key={s} className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-accent" />{s}</span>)}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="mt-12 text-center text-sm text-muted-foreground">
+          <span>Open source · </span>
+          <a href="https://github.com/Klorenn" target="_blank" rel="noopener" className="text-accent/80 hover:text-accent transition">github.com/Klorenn</a>
+          <span className="mx-2 text-border">|</span>
+          <span>2026</span>
         </motion.div>
       </motion.div>
 
-      <motion.div style={{ y: dashboardY }} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="relative z-20 mx-auto mt-10 aspect-video w-[90%] max-w-4xl rounded-2xl md:mt-14">
+      <motion.div style={{ y: dashboardY }} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="relative z-20 mx-auto mt-10 min-h-[460px] md:min-h-[520px] w-[90%] max-w-4xl rounded-2xl md:mt-14">
         <div className="liquid-glass h-full rounded-2xl p-4 shadow-[0_30px_100px_rgba(7,6,16,0.65)] md:p-7">
           <Terminal />
         </div>
