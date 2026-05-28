@@ -1266,7 +1266,7 @@ function Footer() {
             <div className="mt-4 flex items-center gap-3">
               <a href="https://github.com/Klorenn/LavanderSDK" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">GitHub</a>
               <span className="text-border">·</span>
-              <a href="https://x.com/kl0ren" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">X / Twitter</a>
+              <a href="https://x.com/kl0ren" target="_blank" rel="noopener" className="text-muted-foreground hover:text-foreground transition text-sm">X</a>
             </div>
           </div>
           <div>

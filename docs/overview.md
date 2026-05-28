@@ -170,5 +170,5 @@ MIT — Free for personal and commercial use.
 ## Links
 
 - GitHub: [github.com/Klorenn/LavanderSDK](https://github.com/Klorenn/LavanderSDK)
-- X/Twitter: [@kl0ren](https://x.com/kl0ren)
+- X: [@kl0ren](https://x.com/kl0ren)
 - Filecoin ProPGF Batch 3
