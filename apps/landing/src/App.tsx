@@ -204,6 +204,85 @@ function CodeBlock({ code, language, filename }: { code: string; language: strin
   );
 }
 
+/* ── Terminal component ──────────────────────────────────── */
+
+const asciiDaemon = [
+  '   /|、',
+  '  (˚ˎ 。7  ',
+  '   |、˜〵  ',
+  '  じしˍ,)ノ',
+];
+
+const terminalLines = [
+  { text: '$ npm install @fetcher-fil/core', color: 'text-foreground/80', delay: 0 },
+  { text: '', color: '', delay: 0.4 },
+  { text: '+ @fetcher-fil/core@0.1.0', color: 'text-[#7bd4a8]', delay: 0.6 },
+  { text: '+ @filoz/synapse-sdk@0.41.0', color: 'text-[#7bd4a8]', delay: 0.8 },
+  { text: 'added 3 packages in 1.2s', color: 'text-muted-foreground', delay: 1.0 },
+  { text: '', color: '', delay: 1.3 },
+  { text: '$ npx @fetcher-fil/mcp', color: 'text-accent font-bold', delay: 1.5 },
+  { text: '', color: '', delay: 2.0 },
+  { text: 'Fetcher v0.1.0 — 17 tools ready.', color: 'text-foreground/90', delay: 2.2 },
+  { text: 'MCP server listening on stdio', color: 'text-muted-foreground', delay: 2.4 },
+  { text: 'Storage · Verify · Observe · Memory · Payments', color: 'text-muted-foreground', delay: 2.6 },
+];
+
+function Terminal() {
+  const [visibleLines, setVisibleLines] = useState(0);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setStarted(true), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    if (visibleLines >= terminalLines.length) return;
+    const line = terminalLines[visibleLines];
+    const timer = setTimeout(() => setVisibleLines(v => v + 1), line.delay * 1000);
+    return () => clearTimeout(timer);
+  }, [started, visibleLines]);
+
+  return (
+    <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 shadow-2xl flex">
+      <div className="w-[42%] hidden md:flex items-center justify-center border-r border-white/5 p-4">
+        <pre className="font-mono text-[10px] md:text-xs leading-[1.15] text-accent/60 whitespace-pre">
+          {asciiDaemon.join('\n')}
+        </pre>
+      </div>
+      <div className="flex-1 flex flex-col p-4 md:p-6 font-mono text-[11px] md:text-xs">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b8b]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#7bd4a8]" />
+          <span className="ml-3 text-[10px] text-muted-foreground">Terminal</span>
+        </div>
+        <div className="flex-1 space-y-0.5 overflow-hidden">
+          {terminalLines.slice(0, visibleLines).map((line, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -4 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+              className={`${line.color} leading-relaxed`}
+            >
+              {line.text || '\u00A0'}
+              {i === visibleLines - 1 && i >= 6 && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
+                  className="inline-block w-2 h-3.5 bg-accent ml-0.5 align-middle rounded-sm"
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Sections ────────────────────────────────────────────── */
 
 function Hero() {
@@ -259,13 +338,7 @@ function Hero() {
 
       <motion.div style={{ y: dashboardY }} initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="relative z-20 mx-auto mt-10 aspect-video w-[90%] max-w-4xl rounded-2xl md:mt-14">
         <div className="liquid-glass h-full rounded-2xl p-4 shadow-[0_30px_100px_rgba(7,6,16,0.65)] md:p-7">
-          <div className="h-full rounded-xl border border-white/10 bg-[#05040b]/90 p-4 font-mono text-xs text-foreground/85 shadow-2xl md:p-7 md:text-sm flex items-center justify-center">
-            <div className="text-center">
-              <img src="/fetcher-icon.png" alt="Fetcher" className="h-16 w-16 mx-auto rounded-full shadow-[0_0_30px_rgba(168,125,212,0.4)] mb-3" />
-              <p className="text-accent font-bold text-lg md:text-2xl">npx @fetcher-fil/mcp</p>
-              <p className="text-muted-foreground mt-3 text-sm md:text-base">One command. 17 tools. Full Filecoin Onchain Cloud.</p>
-            </div>
-          </div>
+          <Terminal />
         </div>
       </motion.div>
 
