@@ -2,30 +2,32 @@ import { useEffect, useMemo, useRef } from 'react';
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { Button } from './components/ui/button';
 
-const navLinks = ['Docs', 'Examples', 'Grimoire'];
+const navLinks = ['Docs', 'Tools', 'Integrations', 'Grimoire'];
 
 const tools = [
-  ['store_file', 'Upload any file. Get a verified CID back.'],
-  ['retrieve_file', 'Fetch any file by CID from the network.'],
-  ['check_deal', 'Verify a storage deal is active and healthy.'],
-  ['list_files', 'List all files your agent has stored.'],
-  ['verify_cid', "Cryptographically verify any CID's integrity."],
+  { name: 'store_file', desc: 'Upload any file. Get a permanent, verified CID on Filecoin.', group: 'Storage' },
+  { name: 'retrieve_file', desc: 'Fetch any file by CID. Text, JSON, or binary.', group: 'Storage' },
+  { name: 'list_files', desc: 'List all files with tags, filters, and pagination.', group: 'Storage' },
+  { name: 'verify_cid', desc: 'Cryptographic integrity check with PDP evidence.', group: 'Verify' },
+  { name: 'check_deal', desc: 'Confirm storage deal state — active providers, expiry, redundancy.', group: 'Verify' },
+  { name: 'store_memory', desc: 'Persist agent context between sessions. Versioned, TTL-aware.', group: 'Memory' },
+  { name: 'retrieve_memory', desc: 'Recall agent state from previous conversations.', group: 'Memory' },
+  { name: 'estimate_cost', desc: 'Estimate storage cost before uploading. Full breakdown.', group: 'Observe' },
+  { name: 'get_storage_stats', desc: 'Dashboard: total files, GB stored, active deals, tags used.', group: 'Observe' },
 ] as const;
 
 const tickerItems = [
   'npm install fetcher-fil',
-  'store_file',
-  'retrieve_file',
-  'check_deal',
-  'verify_cid',
-  'list_files',
-  'works with Claude',
-  'GPT-4o',
-  'Gemini',
-  'LangChain',
-  'LlamaIndex',
-  'any MCP client',
+  'store_file', 'retrieve_file', 'list_files', 'delete_file',
+  'verify_cid', 'check_deal', 'get_proof',
+  'get_balance', 'estimate_cost', 'get_storage_stats', 'list_deals',
+  'store_memory', 'retrieve_memory', 'update_memory', 'list_memories', 'delete_memory',
+  'prepare_storage',
+  'Claude Desktop', 'GPT-4o', 'Gemini', 'LangChain', 'LlamaIndex',
+  'SDK direct', 'any MCP client', '17 tools total',
 ];
+
+const groups = ['Storage', 'Verify', 'Observe', 'Memory', 'Payments'] as const;
 
 const quote =
   "Fetcher changed how our agents handle data. We went from losing everything between sessions to having a persistent, verifiable memory on Filecoin. It just works — and that's rare in Web3.";
@@ -144,6 +146,8 @@ function Hero() {
           className="liquid-glass mb-6 flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/90"
         >
           <span className="rounded-md bg-accent px-2 py-1 text-xs font-bold text-background">MCP</span>
+          <span className="rounded-md bg-[#5b8dff]/20 px-2 py-1 text-xs font-bold text-[#9db8ff]">LangChain</span>
+          <span className="rounded-md bg-[#a87dd4]/20 px-2 py-1 text-xs font-bold text-accent">LlamaIndex</span>
           <span>Connect your AI agents to Filecoin</span>
         </motion.div>
 
@@ -167,9 +171,9 @@ function Hero() {
           custom={0.2}
           className="mb-8 max-w-2xl text-lg leading-8 text-hero-subtitle opacity-90"
         >
-          Fetcher lets your AI agents store, retrieve
+          Fetcher gives your AI agents 17 tools to store, retrieve,
           <br className="hidden sm:block" />
-          and verify data on Filecoin — in one install.
+          verify and remember data on Filecoin — in one install.
         </motion.p>
 
         <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.3}>
@@ -203,10 +207,11 @@ function Hero() {
     }
   }
 }
-// done. your agent now has Filecoin.`}
+// done. your agent now has Filecoin.
+// 17 tools. 3 frameworks. 1 install.`}
             </pre>
             <div className="mt-6 flex flex-wrap gap-3">
-              {['5 MCP tools', '1 npm install', '0 blockchain knowledge'].map((stat) => (
+              {['17 MCP tools', '1 npm install', '0 blockchain knowledge', 'LangChain', 'LlamaIndex', 'Agent memory'].map((stat) => (
                 <span key={stat} className="rounded-full border border-accent/25 bg-accent-soft/55 px-3 py-1.5 text-[11px] text-accent md:text-xs">
                   {stat}
                 </span>
@@ -217,7 +222,6 @@ function Hero() {
       </motion.div>
 
       <div className="pointer-events-none absolute bottom-0 z-30 h-40 w-full bg-gradient-to-t from-background to-transparent" />
-      <img src="/fetcher-lavender-frame2.png" alt="" aria-hidden="true" className="sr-only" />
     </section>
   );
 }
@@ -240,7 +244,7 @@ function Ticker() {
 
 function ToolsSection() {
   return (
-    <section id="examples" className="min-h-screen px-8 py-24 md:px-28 md:py-32">
+    <section id="tools" className="px-8 py-24 md:px-28 md:py-32">
       <div className="mx-auto max-w-7xl">
         <motion.h2
           initial={{ opacity: 0, y: 24 }}
@@ -249,22 +253,76 @@ function ToolsSection() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl font-serif text-4xl leading-tight text-foreground md:text-5xl"
         >
-          Five tools. One install. Full Filecoin.
+          17 tools. One install. Full Filecoin Onchain Cloud.
         </motion.h2>
-        <div className="mt-16 grid gap-5 md:grid-cols-6">
-          {tools.map(([name, description], index) => (
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mt-4 max-w-2xl text-lg text-muted-foreground"
+        >
+          Five groups — Storage, Verify, Observe, Memory, Payments — available on MCP, LangChain, LlamaIndex, and SDK direct.
+        </motion.p>
+        <div className="mt-16 grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+          {tools.map(({ name, desc, group }, index) => (
             <motion.article
               key={name}
               initial={{ opacity: 0, y: 36 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.35 }}
-              transition={{ duration: 0.55, delay: index * 0.1 }}
-              className="rounded-xl border border-border bg-card p-6 md:col-span-2 [&:nth-last-child(2)]:md:col-start-2"
+              transition={{ duration: 0.55, delay: index * 0.08 }}
+              className="rounded-xl border border-border bg-card p-6"
             >
-              <div className="mb-6 h-2.5 w-2.5 rounded-full bg-accent shadow-[0_0_18px_rgba(168,125,212,0.8)]" />
+              <div className="mb-5 flex items-center gap-2">
+                <span className="rounded-md bg-accent/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">{group}</span>
+              </div>
               <h3 className="font-mono text-sm text-accent">{name}</h3>
-              <p className="mt-4 leading-7 text-muted-foreground">{description}</p>
+              <p className="mt-3 leading-7 text-muted-foreground">{desc}</p>
             </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IntegrationsSection() {
+  const cards = [
+    { title: 'MCP Server', desc: 'Claude Desktop in one config line. Zero code.', color: 'accent', badge: 'MCP' },
+    { title: 'LangChain Toolkit', desc: 'FetcherToolkit with 17 DynamicStructuredTools. Native ReAct support.', color: '[#5b8dff]', badge: 'LangChain' },
+    { title: 'LlamaIndex Tools', desc: '17 FunctionTools for OpenAIAgent. Full JSON schema support.', color: '[#a87dd4]', badge: 'LlamaIndex' },
+    { title: 'SDK Direct', desc: 'Fetcher class with fluent API: fetcher.store(), fetcher.memory.store(), fetcher.stats().', color: '[#7bd4a8]', badge: 'SDK' },
+  ];
+
+  return (
+    <section id="integrations" className="px-8 py-24 md:px-28 md:py-32 bg-card/30">
+      <div className="mx-auto max-w-7xl">
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl font-serif text-4xl leading-tight text-foreground md:text-5xl"
+        >
+          One SDK. Four ways to use it.
+        </motion.h2>
+        <div className="mt-14 grid gap-6 sm:grid-cols-2">
+          {cards.map((card, index) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="rounded-xl border border-border bg-background p-7"
+            >
+              <span className={`inline-block rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-${card.color} bg-${card.color}/10`}>
+                {card.badge}
+              </span>
+              <h3 className="mt-4 text-xl font-semibold text-foreground">{card.title}</h3>
+              <p className="mt-3 leading-7 text-muted-foreground">{card.desc}</p>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -328,9 +386,6 @@ function EcosystemSection() {
           <p className="mt-6 max-w-md leading-8 text-muted-foreground">
             Store API keys, credentials and secrets permanently on Filecoin. Your agents never lose them between sessions.
           </p>
-          <a href="#docs" className="mt-8 inline-flex text-sm font-semibold text-foreground transition hover:text-accent">
-            Explore Grimoire →
-          </a>
         </motion.div>
 
         <div className="hidden w-px bg-border md:block" />
@@ -348,7 +403,7 @@ function EcosystemSection() {
           </div>
           <h2 className="mt-5 font-serif text-4xl text-foreground md:text-5xl">The spirit messenger</h2>
           <p className="mt-6 max-w-md leading-8 text-muted-foreground">
-            Give your agents the power to store, retrieve and verify any data on Filecoin. One npm install.
+            17 tools. MCP, LangChain, LlamaIndex, SDK. Agent memory. One npm install.
           </p>
         </motion.div>
       </div>
@@ -392,6 +447,7 @@ export default function App() {
       <Hero />
       <Ticker />
       <ToolsSection />
+      <IntegrationsSection />
       <TestimonialSection />
       <EcosystemSection />
       <Footer />
